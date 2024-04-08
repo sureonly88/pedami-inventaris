@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\FileUpload;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use pxlrbt\FilamentExcel\Exports\ExcelExport;
+
 
 class DataR2r4Resource extends Resource
 {
@@ -111,7 +114,7 @@ class DataR2r4Resource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('kode_brg'),
                 Tables\Columns\TextColumn::make('jns_brg'),
-                Tables\Columns\TextColumn::make('plat'),
+                Tables\Columns\TextColumn::make('plat')->searchable(),
                 Tables\Columns\TextColumn::make('nm_brg'),
                 Tables\Columns\TextColumn::make('no_kontrak'),
                 Tables\Columns\TextColumn::make('jangka_wkt_awl'),
@@ -133,7 +136,11 @@ class DataR2r4Resource extends Resource
                         'R4' => 'R4',
                     ])
             ])
-
+            ->headerActions([
+                
+                ExportAction::make()
+               
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -160,7 +167,7 @@ class DataR2r4Resource extends Resource
             'index' => Pages\ListDataR2r4s::route('/'),
             'create' => Pages\CreateDataR2r4::route('/create'),
             'edit' => Pages\EditDataR2r4::route('/{record}/edit'),
-
+           
         ];
     }
 }

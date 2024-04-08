@@ -15,4 +15,9 @@ class Asset extends Model
     {
         return $this->belongsTo(Karyawan::class);
     }
+
+    public function penanggung_jawab(): BelongsTo
+    {
+        return $this->belongsTo(Karyawan::class);
+    }
 }

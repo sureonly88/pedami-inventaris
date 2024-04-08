@@ -22,6 +22,7 @@ use App\Filament\Exports\AssetExporter;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
+use Illuminate\Database\Eloquent\Collection;
 
 class AssetResource extends Resource
 {
@@ -43,8 +44,20 @@ class AssetResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('kode_asset')
-                    ->required()
-                    ->maxLength(255),
+                ->required()
+                ->readOnly(true)
+                ->default(function (?Asset $Asset): String {
+                    $last_sub = $Asset::orderBy('kode_asset','desc')->first();
+                    $next_num = 1;
+                    if ($last_sub) {
+                        $next_num = (int)substr($last_sub->kode_asset, 2, 3) + 1;
+                    }
+                    
+                    $next_sub = 'KA'. str_repeat('0', 3 - strlen($next_num)) . $next_num;
+                    return $next_sub;
+                })
+                ->maxLength(255),
+              
                 Forms\Components\TextInput::make('nama_asset')
                     ->required()
                     ->maxLength(255),
@@ -52,19 +65,25 @@ class AssetResource extends Resource
                     ->options([
                         'kantor' => 'Perabotan Kantor',
                         'komputer' => 'Peralatan Komputer',
-                        'kendaraan' => 'Kendaraan',
+                        'Kendaraan Operasional'=> 'Kendaraan Operasional',
                     ])->required(),
                 Forms\Components\Select::make('lokasi')
                     ->options([
-                        'Kantor A. Yani' => 'Kantor A Yani',
-                        'Kantor S. Parman' => 'Kantor S Parman',
-                        'Kantor Beruntung' => 'Kantor Beruntung',
-                        'Kantor Sutoyo' => 'Kantor Sutoyo',
-                        'Kantor Cemara' => 'Kantor Cemara',
+                        'Kantor A. Yani' => 'Kantor A. Yani',
+                        'Loket Kasir A. Yani' => 'Loket Kasir A. Yani',
+                        'Loket Kasir S. Parman' => 'Loket Kasir S. Parman',
+                        'Loket Kasir Beruntung' => 'Loket Kasir Beruntung',
+                        'Loket Kasir Sutoyo' => 'Loket Kasir Sutoyo',
+                        'Loket Kasir Cemara' => 'Loket Kasir Cemara',
                     ])->required(),
-                Forms\Components\TextInput::make('penanggung_jawab')
-                    ->required()
-                    ->maxLength(255),
+
+                Forms\Components\Select::make('penanggung_jawab_id')
+                    ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
+                    ->searchable()
+                    ->label('Penanggung_jawab'),
+                //Forms\Components\TextInput::make('penanggung_jawab')
+                    //->required()
+                    //->maxLength(255),
 
                 Forms\Components\Select::make('karyawan_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
@@ -92,9 +111,9 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
                 Tables\Columns\TextColumn::make('kelompok_asset'),
                 Tables\Columns\TextColumn::make('lokasi'),
-                Tables\Columns\TextColumn::make('penanggung_jawab'),
+                Tables\Columns\TextColumn::make('penanggung_jawab.nama_karyawan')->label('Penanggung_jawab'),
                 Tables\Columns\TextColumn::make('karyawan.nama_karyawan')->label('Pemakai'),
-                Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi'),
+                Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi')->searchable(),
                 Tables\Columns\TextColumn::make('status_barang'),
             ])
             ->filters([
@@ -111,7 +130,40 @@ class AssetResource extends Resource
                         redirect('/admin/assets/cetak');
                     }),
 
-                ExportAction::make()
+                ExportAction::make(),
+
+                Tables\Actions\Action::make('pdf')
+                    ->label('Download')
+                    ->accessSelectedRecords()
+                    ->action(function (Collection $selectedRecords) {
+
+                        // $lsAsset = [];
+                        // $i = 0;
+                        // $selectedRecords->map(function (Asset $record) use($lsAsset, $i) {
+                        //     //global $lsAsset;
+                        //     //global $i;
+                            
+                        //     $lsAsset[$i] = $record->kode_asset;
+                        //     $i++;
+                        // });
+
+                        $Assets = $selectedRecords->map(function (Asset $record){
+                            return $record;
+                        });
+
+                        return response()->streamDownload(function () use ($Assets) {
+                            echo Pdf::loadHtml(
+                                    Blade::render('filament.modals.barcode-pdf', ['records' => $Assets])
+                                )->stream();
+                            }, 'Barcode.pdf');  
+                        // return response()->streamDownload(function () use ($selectedRecords) {
+
+
+                        //     echo Pdf::loadHtml(
+                        //         Blade::render('filament.modals.barcode-pdf', ['record' => $record])
+                        //     )->stream();
+                        // }, 'Barcode-' . $record->kode_asset . '.pdf');
+                    }),
                 // Tables\Actions\ExportAction::make('Export')
                 //     ->exporter(AssetExporter::class)
                 //     ->fileDisk('local')
@@ -126,17 +178,7 @@ class AssetResource extends Resource
                     ->modalSubmitAction(false)
                     ->modalWidth(MaxWidth::Medium),
 
-                Action::make('pdf')
-                    ->label('Download')
-                    ->color('success')
-                    ->icon('heroicon-s-squares-2x2')
-                    ->action(function (Asset $record) {
-                        return response()->streamDownload(function () use ($record) {
-                            echo Pdf::loadHtml(
-                                Blade::render('filament.modals.barcode-pdf', ['record' => $record])
-                            )->stream();
-                        }, 'Barcode-' . $record->kode_asset . '.pdf');
-                    }),
+                
 
             ])
             ->bulkActions([

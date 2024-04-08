@@ -13,6 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Subdivisi;
+use App\Models\Divisi;
+use Filament\Forms\Get;
 
 class KaryawanResource extends Resource
 {
@@ -34,17 +37,31 @@ class KaryawanResource extends Resource
                     ->maxLength(255),
                 Forms\Components\select::make('jabatan')
                     ->options([
+                        'Ketua Pengurus' => 'Ketua Pengurus',
+                        'Manager'=> 'Manager',
                         'Kepala Divisi' => 'Kepala Divisi',
                         'Koordinator' => 'Koordinator',
                         'Staff' => 'Staf',
                     ])->required(),
+
+                Forms\Components\Select::make('divisi_id')
+                    ->label('Divisi')
+                    ->options(function (): array {
+                        return Divisi::all()->pluck('nama_divisi', 'id')->all();
+                })->live(),
+
                 Forms\Components\Select::make('subdivisi_id')
-                    ->relationship(
-                        name: 'subdivisi',
-                        modifyQueryUsing: fn (Builder $query) => $query->orderBy('nama_sub'),
-                    )
-                    //->relationship(name: 'subdivisi', titleAttribute: 'divisi.nama_divisi'.'nama_sub')
-                    ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->divisi->nama_divisi}"." - "."{$record->nama_sub}"),
+                    ->label('Sub Divisi')
+                    ->options(function (Get $get): array {
+                        return Subdivisi::where('divisi_id',$get('divisi_id'))->pluck('nama_sub', 'id')->all();
+                    }),
+                // Forms\Components\Select::make('subdivisi_id')
+                //     ->relationship(
+                //         name: 'subdivisi',
+                //         modifyQueryUsing: fn (Builder $query) => $query->orderBy('nama_sub'),
+                //     )
+                //     //->relationship(name: 'subdivisi', titleAttribute: 'divisi.nama_divisi'.'nama_sub')
+                //     ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->divisi->nama_divisi}"." - "."{$record->nama_sub}"),
 
                 Forms\Components\select::make('jkel')
                 ->options([
@@ -59,7 +76,7 @@ class KaryawanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nik'),
-                Tables\Columns\TextColumn::make('nama_karyawan'),
+                Tables\Columns\TextColumn::make('nama_karyawan')->searchable(),
                 Tables\Columns\TextColumn::make('jabatan'),
                 Tables\Columns\TextColumn::make('subdivisi.divisi.nama_divisi'),
                 Tables\Columns\TextColumn::make('subdivisi.nama_sub'),

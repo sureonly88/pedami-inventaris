@@ -52,8 +52,8 @@ class SubdivisiResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('kode_sub'),
-                Tables\Columns\TextColumn::make('divisi.nama_divisi'),
-                Tables\Columns\TextColumn::make('nama_sub'),
+                Tables\Columns\TextColumn::make('divisi.nama_divisi')->searchable(),
+                Tables\Columns\TextColumn::make('nama_sub')->searchable(),
             ])
             ->filters([
                 //
