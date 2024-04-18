@@ -23,6 +23,8 @@ class KaryawanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationLabel = 'Karyawan';
+
     protected static ?string $navigationGroup = 'Setup';
     
     public static function form(Form $form): Form

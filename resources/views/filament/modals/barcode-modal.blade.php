@@ -1,26 +1,26 @@
-<div>
-<table cellpadding="5">
-<tr>
-<td><img src="/img/logo.jpeg" width="60" height="60"></td>
-<td style="text-align: center; vertical-align: top;">BARANG INVENTARIS<br/> KOPERASI KONSUMEN PEDAMI</td>
-</tr>
-<tr>
-    <td colspan="2"><hr/></td>
-</tr>
-<tr>
-    <td>{!! DNS2D::getBarcodeHTML($record->kode_asset, 'QRCODE', 3, 3) !!} <b>{!! $record->kode_asset!!}</b></td>
-    <td style="text-align: top; vertical-align: top;">Nama Barang : {!! $record->nama_asset !!}
-    <br/>Pemakai : {!! $record->karyawan->nama_karyawan!!}
-    <br/>Divisi : {!! $record->karyawan->subdivisi->divisi->nama_divisi!!}
-    </td>
-</tr>
-<tr>
-    <td></td>
-</tr>
-<tr>
-    <td style="text-align: center;" colspan="2">&nbsp;&nbsp;<i>"Dilarang mencabut/melepas stiker ini!"</i></td>
-</tr>
-</table>
 
-</div>
-
+        <table>
+                <tr>
+                    <td colspan="3"; style align="center"><b>INVENTARIS KOPERASI KONSUMEN PEDAMI</b></td>
+                </tr>
+                <tr>
+                    <td width="20%">
+                       
+                        <img src="/img/logo.jpeg" width="65" height="65">
+                    </td>
+                    <td width="50%">
+                        {{ $record->kode_asset }} ({{ $record->nama_asset }})
+                        <br/>
+                        {{ $record->karyawan->nama_karyawan }}
+                        <br/>
+                        {{ $record->karyawan->subdivisi->divisi->nama_divisi }}
+                    </td>
+                    <td width="20%">
+                    {!! DNS2D::getBarcodeHTML($record->kode_asset, 'QRCODE', 3, 3) !!}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3"; style align="center"><i><b>Dilarang mencabut/melepas stiker ini!</b></i></td>
+                </tr>
+            </table>
+        

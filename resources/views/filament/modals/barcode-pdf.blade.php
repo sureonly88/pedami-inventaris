@@ -7,7 +7,7 @@
 
         <table>
                 <tr>
-                    <td colspan="3">INVENTARIS KOPERASI KONSUMEN PEDAMI</td>
+                    <td colspan="3"; style align="center">I<b>NVENTARIS KOPERASI KONSUMEN PEDAMI</b></td>
                 </tr>
                 <tr>
                     <td width="20%">
@@ -26,15 +26,15 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3"><i>Dilarang mencabut/melepas stiker ini!</i></td>
+                    <td colspan="3"; style align="center"><i><b>Dilarang mencabut/melepas stiker ini!</b></i></td>
                 </tr>
             </table>
         </td>
-
+        @if (isset($records[$i+1]))
         <td>
         <table>
                 <tr>
-                    <td colspan="3">INVENTARIS KOPERASI KONSUMEN PEDAMI</td>
+                    <td colspan="3"; style align="center"><b>INVENTARIS KOPERASI KONSUMEN PEDAMI</b></td>
                 </tr>
                 <tr>
                     <td width="20%">
@@ -53,11 +53,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3"><i>Dilarang mencabut/melepas stiker ini!</i></td>
+                    <td colspan="3"; style align="center"><i><b>Dilarang mencabut/melepas stiker ini!</b></i></td>
                 </tr>
             </table>
            
         </td>
+
+        @endif
     </tr>
 
 @endfor

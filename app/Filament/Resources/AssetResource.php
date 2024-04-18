@@ -69,6 +69,7 @@ class AssetResource extends Resource
                     ])->required(),
                 Forms\Components\Select::make('lokasi')
                     ->options([
+                        'Kantor Pramuka IPA2'=> 'Kantor Pramuka IPA2',
                         'Kantor A. Yani' => 'Kantor A. Yani',
                         'Loket Kasir A. Yani' => 'Loket Kasir A. Yani',
                         'Loket Kasir S. Parman' => 'Loket Kasir S. Parman',
@@ -111,8 +112,8 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
                 Tables\Columns\TextColumn::make('kelompok_asset'),
                 Tables\Columns\TextColumn::make('lokasi'),
-                Tables\Columns\TextColumn::make('penanggung_jawab.nama_karyawan')->label('Penanggung_jawab'),
-                Tables\Columns\TextColumn::make('karyawan.nama_karyawan')->label('Pemakai'),
+                Tables\Columns\TextColumn::make('penanggung_jawab.nama_karyawan')->label('Penanggung_jawab')->searchable(),
+                Tables\Columns\TextColumn::make('karyawan.nama_karyawan')->label('Pemakai')->searchable(),
                 Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi')->searchable(),
                 Tables\Columns\TextColumn::make('status_barang'),
             ])
@@ -125,10 +126,10 @@ class AssetResource extends Resource
                     ])
             ])
             ->headerActions([
-                Tables\Actions\Action::make('Cetak Barcode')
-                    ->action(function () {
-                        redirect('/admin/assets/cetak');
-                    }),
+               // Tables\Actions\Action::make('Cetak Barcode')
+                  //  ->action(function () {
+                       // redirect('/admin/assets/cetak');
+                    //}),
 
                 ExportAction::make(),
 
@@ -136,16 +137,6 @@ class AssetResource extends Resource
                     ->label('Download')
                     ->accessSelectedRecords()
                     ->action(function (Collection $selectedRecords) {
-
-                        // $lsAsset = [];
-                        // $i = 0;
-                        // $selectedRecords->map(function (Asset $record) use($lsAsset, $i) {
-                        //     //global $lsAsset;
-                        //     //global $i;
-                            
-                        //     $lsAsset[$i] = $record->kode_asset;
-                        //     $i++;
-                        // });
 
                         $Assets = $selectedRecords->map(function (Asset $record){
                             return $record;

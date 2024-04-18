@@ -19,6 +19,8 @@ class SubdivisiResource extends Resource
     protected static ?string $model = Subdivisi::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    
+    protected static ?string $navigationLabel = 'Subdivisi';
 
     protected static ?string $navigationGroup = 'Setup';
 
