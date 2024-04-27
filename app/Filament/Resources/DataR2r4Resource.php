@@ -53,25 +53,31 @@ class DataR2r4Resource extends Resource
                     ->label('Jenis Barang'),
                 Forms\Components\TextInput::make('plat')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label('No Plat'),
                 Forms\Components\TextInput::make('nm_brg')
                     ->required()
-                    ->maxLength(255),
-                FileUpload::make('Gambar_Fisik')
+                    ->maxLength(255)
+                    ->label('Nama Barang'),
+                FileUpload::make('gambar_fisik')
                     ->image()
-                    ->imageEditor(),
+                    ->imageEditor()
+                    ->label('Foto Fisik'),
                 Forms\Components\TextInput::make('no_kontrak')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('jangka_wkt_awl')
                     ->native(false)
-                    ->required(),
+                    ->required()
+                    ->label('Jangka Waktu Awal'),
                 Forms\Components\DatePicker::make('jangka_wkt_akhir')
                     ->native(false)
-                    ->required(),
+                    ->required()
+                    ->label('Jangka Waktu Akhir'),
                 Forms\Components\TextInput::make('thn')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label('Tahun'),
                 Forms\Components\TextInput::make('no_rangka')
                     ->required()
                     ->maxLength(255),
@@ -81,15 +87,17 @@ class DataR2r4Resource extends Resource
                 Forms\Components\DatePicker::make('pajak')
                     ->native(false)
                     ->required(),
-                FileUpload::make('Gambar_Pajak')
+                FileUpload::make('gambar_pajak')
                     ->image()
-                    ->imageEditor(),
+                    ->imageEditor()
+                    ->label('Gambar Pajak'),
                 Forms\Components\DatePicker::make('stnk')
                     ->native(false)
                     ->required(),
-                FileUpload::make('Gambar_Stnk')
+                FileUpload::make('gambar_stnk')
                     ->image()
-                    ->imageEditor(),
+                    ->imageEditor()
+                    ->label('Gambar STNK'),
                 Forms\Components\TextInput::make('warna')
                     ->required()
                     ->maxLength(255),
