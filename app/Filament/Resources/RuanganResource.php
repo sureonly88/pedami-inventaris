@@ -30,17 +30,15 @@ class RuanganResource extends Resource
                 Forms\Components\TextInput::make('ruangan')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('penanggung_jawab')
-                    ->required()
-                    ->maxLength(255),
-
-                Forms\Components\Select::make('jabatan')
+                Forms\Components\Select::make('lokasi')
                     ->options([
-                        'Pengurus' => 'Pengurus',
-                        'Manager' => 'Manager',
-                        'Kepala Divisi' => 'Kepala Divisi',
-                        'Koordinator' => 'Koordinator',
-                        'Staf' => 'Staf',
+                        'Jl. Pramuka (IPA2)'=> 'Jl. Pramuka (IPA2)',
+                        'Jl. A. Yani Km. 2 (PTAM Bandarmasih)' => 'Jl. A. Yani Km. 2 (PTAM Bandarmasih)',
+                        'Jl. A. Yani Km. 2 (Belakang Pempek Dewi)' => 'Jl. A. Yani Km. 2 (Belakang Pempek Dewi)',
+                        'Jl. S. Parman (Booster PTAM Bandarmasih)' => 'Jl. S. Parman (Booster PTAM Bandarmasih)',
+                        'Jl. Beruntung' => 'Jl. Beruntung',
+                        'Jl. Sutoyo S. (Tower PTAM Bandarmasih)' => 'Jl. Sutoyo S. (Tower PTAM Bandarmasih)',
+                        'Jl. Cemara (Kantor Bantu PTAM Bandarmasih)' => 'Jl. Cemara (Kantor Bantu PTAM Bandarmasih)',
                     ])
             ]);
     }
@@ -49,9 +47,8 @@ class RuanganResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('ruangan'),
-                Tables\Columns\TextColumn::make('penanggung_jawab')->searchable(),
-                Tables\Columns\TextColumn::make('jabatan'),
+                Tables\Columns\TextColumn::make('ruangan')->searchable(),
+                Tables\Columns\TextColumn::make('lokasi'),
             ])
             ->filters([
                 //

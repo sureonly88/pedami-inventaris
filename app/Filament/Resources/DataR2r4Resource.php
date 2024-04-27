@@ -36,6 +36,7 @@ class DataR2r4Resource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('kode_brg')
                 ->required()
+                ->label('Kode Barang')
                 ->readOnly(true)
                 ->default(function (?data_r2r4 $Data_R2r4): String {
                     $last_sub = $Data_R2r4::orderBy('kode_brg','desc')->first();
@@ -48,7 +49,8 @@ class DataR2r4Resource extends Resource
                     ->options([
                         'R2' => 'R2',
                         'R4' => 'R4',
-                    ])->required(),
+                    ])->required()
+                    ->label('Jenis Barang'),
                 Forms\Components\TextInput::make('plat')
                     ->required()
                     ->maxLength(255),

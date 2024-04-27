@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AssetResource\Pages;
 use App\Filament\Resources\AssetResource\RelationManagers;
 use App\Models\Asset;
+use App\Models\Ruangan;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,6 +15,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\ViewColumn;
 use Illuminate\Contracts\View\View;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -61,22 +63,31 @@ class AssetResource extends Resource
                 Forms\Components\TextInput::make('nama_asset')
                     ->required()
                     ->maxLength(255),
+                FileUpload::make('Gambar_Fisik')
+                    ->image()
+                    ->imageEditor(),
                 Forms\Components\Select::make('kelompok_asset')
                     ->options([
                         'kantor' => 'Perabotan Kantor',
                         'komputer' => 'Peralatan Komputer',
                         'Kendaraan Operasional'=> 'Kendaraan Operasional',
                     ])->required(),
-                Forms\Components\Select::make('lokasi')
-                    ->options([
-                        'Kantor Pramuka IPA2'=> 'Kantor Pramuka IPA2',
-                        'Kantor A. Yani' => 'Kantor A. Yani',
-                        'Loket Kasir A. Yani' => 'Loket Kasir A. Yani',
-                        'Loket Kasir S. Parman' => 'Loket Kasir S. Parman',
-                        'Loket Kasir Beruntung' => 'Loket Kasir Beruntung',
-                        'Loket Kasir Sutoyo' => 'Loket Kasir Sutoyo',
-                        'Loket Kasir Cemara' => 'Loket Kasir Cemara',
-                    ])->required(),
+                    
+                Forms\Components\Select::make('ruangan_id')
+                    ->relationship(name: 'ruangan', titleAttribute: 'ruangan')
+                    ->getOptionLabelFromRecordUsing(fn (Ruangan $record) => "{$record->ruangan} - {$record->lokasi}")
+                    ->label('Ruang/Lokasi'),
+
+               //Forms\Components\Select::make('lokasi')
+                   // ->options([
+                        //'Kantor Pramuka IPA2'=> 'Kantor Pramuka IPA2',
+                        //'Kantor A. Yani' => 'Kantor A. Yani',
+                        //'Loket Kasir A. Yani' => 'Loket Kasir A. Yani',
+                        //'Loket Kasir S. Parman' => 'Loket Kasir S. Parman',
+                        //'Loket Kasir Beruntung' => 'Loket Kasir Beruntung',
+                        //'Loket Kasir Sutoyo' => 'Loket Kasir Sutoyo',
+                        //'Loket Kasir Cemara' => 'Loket Kasir Cemara',
+                    //])->required(),
 
                 Forms\Components\Select::make('penanggung_jawab_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
