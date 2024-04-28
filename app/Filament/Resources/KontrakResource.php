@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\KontrakResource\Pages;
+use App\Filament\Resources\KontrakResource\RelationManagers;
+use App\Models\Kontrak;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,14 +12,16 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\ViewColumn;
 
-class UserResource extends Resource
+class KontrakResource extends Resource
 {
-    protected static ?string $model = User::class;
-
-    protected static ?string $navigationLabel = 'User';
+    protected static ?string $model = Kontrak::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationLabel = 'Kontrak';
 
     protected static ?string $navigationGroup = 'Setup';
 
@@ -27,23 +29,19 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                Forms\Components\TextInput::make('no_kontrak')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
+                    ->maxLength(50),
+                Forms\Components\TextInput::make('judul')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
+                    ->maxLength(50),
+                Forms\Components\DatePicker::make('tgl_awal')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\select::make('role')
-                    ->options([
-                        'admin' => 'Admin',
-                        'user' => 'User',
-                    ])->required(),
+                    ->label('Tanggal Awal Kontrak'),
+                Forms\Components\DatePicker::make('tgl_akhir')
+                    ->required()
+                    ->label('Tanggal Akhir Kontrak'),
+                FileUpload::make('file')
             ]);
     }
 
@@ -51,13 +49,6 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -66,12 +57,25 @@ class UserResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('no_kontrak')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('judul')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('tgl_awal')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tgl_akhir')
+                    ->date()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('file')
+                    ->searchable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -90,9 +94,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListKontraks::route('/'),
+            'create' => Pages\CreateKontrak::route('/create'),
+            'edit' => Pages\EditKontrak::route('/{record}/edit'),
         ];
     }
 }

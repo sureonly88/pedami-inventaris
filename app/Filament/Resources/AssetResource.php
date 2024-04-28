@@ -46,71 +46,61 @@ class AssetResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('kode_asset')
-                ->required()
-                ->readOnly(true)
-                ->default(function (?Asset $Asset): String {
-                    $last_sub = $Asset::orderBy('kode_asset','desc')->first();
-                    $next_num = 1;
-                    if ($last_sub) {
-                        $next_num = (int)substr($last_sub->kode_asset, 2, 3) + 1;
-                    }
-                    
-                    $next_sub = 'KA'. str_repeat('0', 3 - strlen($next_num)) . $next_num;
-                    return $next_sub;
-                })
-                ->maxLength(255),
-              
+                    ->required()
+                    ->readOnly(true)
+                    ->default(function (?Asset $Asset): string {
+                        $last_sub = $Asset::orderBy('kode_asset', 'desc')->first();
+                        $next_num = 1;
+                        if ($last_sub) {
+                            $next_num = (int) substr($last_sub->kode_asset, 2, 3) + 1;
+                        }
+
+                        $next_sub = 'KA' . str_repeat('0', 3 - strlen($next_num)) . $next_num;
+                        return $next_sub;
+                    })
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('nama_asset')
                     ->required()
                     ->maxLength(255),
-                FileUpload::make('Gambar_Fisik')
+                Forms\Components\DatePicker::make('tgl_beli')
+                    ->native(false)
+                    ->label('Tanggal Pembelian'),
+                FileUpload::make('gambar')
                     ->image()
                     ->imageEditor(),
                 Forms\Components\Select::make('kelompok_asset')
                     ->options([
                         'kantor' => 'Perabotan Kantor',
                         'komputer' => 'Peralatan Komputer',
-                        'Kendaraan Operasional'=> 'Kendaraan Operasional',
+                        'Kendaraan Operasional' => 'Kendaraan Operasional',
                     ])->required(),
-                    
+
                 Forms\Components\Select::make('ruangan_id')
                     ->relationship(name: 'ruangan', titleAttribute: 'ruangan')
-                    ->getOptionLabelFromRecordUsing(fn (Ruangan $record) => "{$record->ruangan} - {$record->lokasi}")
+                    ->getOptionLabelFromRecordUsing(fn(Ruangan $record) => "{$record->ruangan} - {$record->lokasi}")
                     ->label('Ruang/Lokasi'),
-
-               //Forms\Components\Select::make('lokasi')
-                   // ->options([
-                        //'Kantor Pramuka IPA2'=> 'Kantor Pramuka IPA2',
-                        //'Kantor A. Yani' => 'Kantor A. Yani',
-                        //'Loket Kasir A. Yani' => 'Loket Kasir A. Yani',
-                        //'Loket Kasir S. Parman' => 'Loket Kasir S. Parman',
-                        //'Loket Kasir Beruntung' => 'Loket Kasir Beruntung',
-                        //'Loket Kasir Sutoyo' => 'Loket Kasir Sutoyo',
-                        //'Loket Kasir Cemara' => 'Loket Kasir Cemara',
-                    //])->required(),
 
                 Forms\Components\Select::make('penanggung_jawab_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
                     ->searchable()
                     ->label('Penanggung_jawab'),
                 //Forms\Components\TextInput::make('penanggung_jawab')
-                    //->required()
-                    //->maxLength(255),
+                //->required()
+                //->maxLength(255),
 
                 Forms\Components\Select::make('karyawan_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
                     ->searchable()
                     ->label('Pemakai'),
 
-                //Forms\Components\TextInput::make('divisi')
-                // ->required()
-                //->maxLength(255),
                 Forms\Components\Select::make('status_barang')
                     ->options([
                         'Dipakai' => 'Dipakai',
                         'Rusak' => 'Rusak',
                         'Dijual' => 'Dijual',
-                    ])->required()
+                    ])->required(),
+                Forms\Components\TextInput::make('deskripsi')
+                    ->maxLength(255)
                     ->columns(2)
             ]);
     }
@@ -121,12 +111,15 @@ class AssetResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('kode_asset'),
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
+                Tables\Columns\TextColumn::make('tgl_beli'),
+                Tables\Columns\TextColumn::make('gambar'),
                 Tables\Columns\TextColumn::make('kelompok_asset'),
                 Tables\Columns\TextColumn::make('lokasi'),
                 Tables\Columns\TextColumn::make('penanggung_jawab.nama_karyawan')->label('Penanggung_jawab')->searchable(),
                 Tables\Columns\TextColumn::make('karyawan.nama_karyawan')->label('Pemakai')->searchable(),
                 Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi')->searchable(),
                 Tables\Columns\TextColumn::make('status_barang'),
+                Tables\Columns\TextColumn::make('deskripsi'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('kelompok_asset')
@@ -137,10 +130,10 @@ class AssetResource extends Resource
                     ])
             ])
             ->headerActions([
-               // Tables\Actions\Action::make('Cetak Barcode')
-                  //  ->action(function () {
-                       // redirect('/admin/assets/cetak');
-                    //}),
+                // Tables\Actions\Action::make('Cetak Barcode')
+                //  ->action(function () {
+                // redirect('/admin/assets/cetak');
+                //}),
 
                 ExportAction::make(),
 
@@ -149,17 +142,17 @@ class AssetResource extends Resource
                     ->accessSelectedRecords()
                     ->action(function (Collection $selectedRecords) {
 
-                        $Assets = $selectedRecords->map(function (Asset $record){
+                        $Assets = $selectedRecords->map(function (Asset $record) {
                             return $record;
                         });
 
                         return response()->streamDownload(function () use ($Assets) {
                             echo Pdf::loadHtml(
-                                    Blade::render('filament.modals.barcode-pdf', ['records' => $Assets])
-                                )->stream();
-                            }, 'Barcode.pdf');  
+                                Blade::render('filament.modals.barcode-pdf', ['records' => $Assets])
+                            )->stream();
+                        }, 'Barcode.pdf');
                         // return response()->streamDownload(function () use ($selectedRecords) {
-
+            
 
                         //     echo Pdf::loadHtml(
                         //         Blade::render('filament.modals.barcode-pdf', ['record' => $record])
@@ -180,7 +173,7 @@ class AssetResource extends Resource
                     ->modalSubmitAction(false)
                     ->modalWidth(MaxWidth::Medium),
 
-                
+
 
             ])
             ->bulkActions([
