@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\KontrakResource\Pages;
 use App\Filament\Resources\KontrakResource\RelationManagers;
+use App\Models\data_r2r4;
 use App\Models\Kontrak;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\ViewColumn;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 
 class KontrakResource extends Resource
 {
@@ -41,7 +44,17 @@ class KontrakResource extends Resource
                 Forms\Components\DatePicker::make('tgl_akhir')
                     ->required()
                     ->label('Tanggal Akhir Kontrak'),
-                FileUpload::make('file')
+                FileUpload::make('file'),
+                Repeater::make('kontrakDetails')
+                    ->relationship()
+                    ->schema([
+                        Select::make('data_r2r4_id')
+                            ->label('Kendaraan')
+                            ->searchable()
+                            ->options(function (): array {
+                                return data_r2r4::all()->pluck('plat', 'id')->all();
+                        })
+                    ])
             ]);
     }
 

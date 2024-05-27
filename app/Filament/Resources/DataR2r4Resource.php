@@ -55,8 +55,10 @@ class DataR2r4Resource extends Resource
                     ->maxLength(255),
                 Forms\Components\select::make('jns_brg')
                     ->options([
-                        'R2' => 'R2',
-                        'R4' => 'R4',
+                        'R2 Operasional' => 'R2 Operasional',
+                        'R4 Operasional' => 'R4 Operasional',
+                        'R2 Dinas' => 'R2 Dinas',
+                        'R4 Dinas' => 'R4 Dinas',
                     ])->required()
                     ->label('Jenis Barang'),
                 Forms\Components\TextInput::make('plat')
@@ -67,15 +69,17 @@ class DataR2r4Resource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->label('Nama Barang'),
+                Forms\Components\TextInput::make('no_bpkb')
+                    ->maxLength(255)
+                    ->label('No BPKB'),
 
-
-                Forms\Components\Select::make('kontrak_id')
-                    ->label('Kontrak')
-                    // ->options(function (Get $get): array {
-                    //     return Kontrak::all()->pluck('judul', 'id')->all();
-                    // })
-                    ->relationship(name: 'kontrak', titleAttribute: 'no_kontrak')
-                    ->getOptionLabelFromRecordUsing(fn(Kontrak $record) => "{$record->no_kontrak} - {$record->judul}"),
+                // Forms\Components\Select::make('kontrak_id')
+                //     ->label('Kontrak')
+                //     // ->options(function (Get $get): array {
+                //     //     return Kontrak::all()->pluck('judul', 'id')->all();
+                //     // })
+                //     ->relationship(name: 'kontrak', titleAttribute: 'no_kontrak')
+                //     ->getOptionLabelFromRecordUsing(fn(Kontrak $record) => "{$record->no_kontrak} - {$record->judul}"),
 
                 // Forms\Components\TextInput::make('judul_kontrak')
                 //     ->default(function (Get $get): string {
@@ -97,55 +101,46 @@ class DataR2r4Resource extends Resource
                 //     ])
                 //     ->live(),
 
-                Forms\Components\DatePicker::make('jangka_wkt_awl')
-                    ->native(false)
-                    ->required()
-                    ->label('Jangka Waktu Awal'),
-                Forms\Components\DatePicker::make('jangka_wkt_akhir')
-                    ->native(false)
-                    ->required()
-                    ->label('Jangka Waktu Akhir'),
+                // Forms\Components\DatePicker::make('jangka_wkt_awl')
+                //     ->native(false)
+                //     ->required()
+                //     ->label('Jangka Waktu Awal'),
+                // Forms\Components\DatePicker::make('jangka_wkt_akhir')
+                //     ->native(false)
+                //     ->required()
+                //     ->label('Jangka Waktu Akhir'),
                 Forms\Components\TextInput::make('thn')
-                    ->required()
                     ->maxLength(255)
                     ->label('Tahun'),
                 Forms\Components\TextInput::make('no_rangka')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('no_mesin')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('pajak')
-                    ->native(false)
-                    ->required(),
+                    ->native(false),
                 FileUpload::make('gambar_pajak')
                     ->image()
                     ->imageEditor()
                     ->label('Gambar Pajak'),
                 Forms\Components\DatePicker::make('stnk')
-                    ->native(false)
-                    ->required(),
+                    ->native(false),
                 FileUpload::make('gambar_stnk')
                     ->image()
                     ->imageEditor()
                     ->label('Gambar STNK'),
                 Forms\Components\TextInput::make('warna')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('pemegang')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('departemen')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\select::make('stat')
                     ->options([
-                        'Dipakai' => 'Dipakai',
-                        'Habis Kontrak' => 'Habis Kontrak',
-                        'Diperpanjang' => 'Diperpanjang',
-                        'Dikembalikan' => 'Dikembalikan',
-                        'Dibeli' => 'Dibeli',
-                    ])->required(),
+                        'Dipakai - Habis Kontrak' => 'Dipakai - Habis Kontrak',
+                        'Di pakai - Tidak ada Kontrak' => 'Di pakai - Tidak ada Kontrak',
+                        'Dipakai - Kontrak Berjalan' => 'Dipakai - Kontrak Berjalan',
+                        'Operasional Pedami' => 'Operasional Pedami',
+                    ]),
 
                 FileUpload::make('gambar_fisik')
                     ->image()
@@ -170,14 +165,15 @@ class DataR2r4Resource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('kode_brg'),
-                Tables\Columns\TextColumn::make('jns_brg'),
+                Tables\Columns\TextColumn::make('kode_brg')->label('Kode Barang'),
+                Tables\Columns\TextColumn::make('jns_brg')->label('Jenis Barang'),
                 Tables\Columns\TextColumn::make('plat')->searchable(),
-                Tables\Columns\TextColumn::make('nm_brg'),
-                Tables\Columns\TextColumn::make('kontrak.no_kontrak'),
-                Tables\Columns\TextColumn::make('jangka_wkt_awl'),
-                Tables\Columns\TextColumn::make('jangka_wkt_akhir'),
-                Tables\Columns\TextColumn::make('thn'),
+                Tables\Columns\TextColumn::make('nm_brg')->label('Nama Barang'),
+                Tables\Columns\TextColumn::make('no_bpkb')->label('No BPKB'),
+                // Tables\Columns\TextColumn::make('kontrak.no_kontrak'),
+                // Tables\Columns\TextColumn::make('jangka_wkt_awl'),
+                // Tables\Columns\TextColumn::make('jangka_wkt_akhir'),
+                Tables\Columns\TextColumn::make('thn')->label('Tahun'),
                 Tables\Columns\TextColumn::make('no_rangka'),
                 Tables\Columns\TextColumn::make('no_mesin'),
                 Tables\Columns\TextColumn::make('pajak'),
@@ -190,8 +186,10 @@ class DataR2r4Resource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('jns_brg')
                     ->options([
-                        'R2' => 'R2',
-                        'R4' => 'R4',
+                        'R2 Operasional' => 'R2 Operasional',
+                        'R4 Operasional' => 'R4 Operasional',
+                        'R2 Dinas' => 'R2 Dinas',
+                        'R4 Dinas' => 'R4 Dinas',
                     ])
             ])
             ->headerActions([
