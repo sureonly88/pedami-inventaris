@@ -10,8 +10,7 @@
                     </td>
                     <td width="50%">
                         {{ $record->kode_asset }} ({{ $record->nama_asset }})
-                        <br/>
-                        {{ $record->karyawan->nama_karyawan }}
+                        <!-- {{ $record->karyawan->nama_karyawan }} -->
                         <br/>
                         {{ $record->karyawan->subdivisi->divisi->nama_divisi }}
                     </td>
