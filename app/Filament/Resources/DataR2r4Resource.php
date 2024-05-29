@@ -166,10 +166,10 @@ class DataR2r4Resource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('kode_brg')->label('Kode Barang'),
-                Tables\Columns\TextColumn::make('jns_brg')->label('Jenis Barang'),
+                Tables\Columns\TextColumn::make('jns_brg')->label('Jenis Barang')->searchable(),
                 Tables\Columns\TextColumn::make('plat')->searchable(),
                 Tables\Columns\TextColumn::make('nm_brg')->label('Nama Barang'),
-                Tables\Columns\TextColumn::make('no_bpkb')->label('No BPKB'),
+                Tables\Columns\TextColumn::make('no_bpkb')->label('No BPKB')->searchable(),
                 // Tables\Columns\TextColumn::make('kontrak.no_kontrak'),
                 // Tables\Columns\TextColumn::make('jangka_wkt_awl'),
                 // Tables\Columns\TextColumn::make('jangka_wkt_akhir'),
@@ -180,8 +180,8 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('stnk'),
                 Tables\Columns\TextColumn::make('warna'),
                 Tables\Columns\TextColumn::make('pemegang'),
-                Tables\Columns\TextColumn::make('departemen'),
-                Tables\Columns\TextColumn::make('stat'),
+                Tables\Columns\TextColumn::make('departemen')->searchable(),
+                Tables\Columns\TextColumn::make('stat')->searchable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('jns_brg')
