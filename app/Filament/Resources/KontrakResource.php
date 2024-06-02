@@ -33,6 +33,7 @@ class KontrakResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('no_kontrak')
+                    //->unique(column: 'no_kontrak')
                     ->required()
                     ->maxLength(50),
                 Forms\Components\TextInput::make('judul')
@@ -48,12 +49,17 @@ class KontrakResource extends Resource
                 Repeater::make('kontrakDetails')
                     ->relationship()
                     ->schema([
+                        // Select::make('data_r2r4_id')
+                        //     ->label('Kendaraan')    
+                        //     ->options(data_r2r4::all()->pluck('plat', 'id')->all())
+                        // ->searchable()
+
                         Select::make('data_r2r4_id')
-                            ->label('Kendaraan')
+                            ->label('Kendaraan') 
                             ->searchable()
-                            ->options(function (): array {
-                                return data_r2r4::all()->pluck('plat', 'id')->all();
-                        })
+                            //->options(data_r2r4::all()->pluck('plat', 'id')->all())
+                            ->getSearchResultsUsing(fn (string $search): array => data_r2r4::where('plat', 'like', "%{$search}%")->limit(50)->pluck('plat', 'id')->toArray())
+                            ->getOptionLabelUsing(fn ($value): ?string => data_r2r4::find($value)?->plat),
                     ])
             ]);
     }
