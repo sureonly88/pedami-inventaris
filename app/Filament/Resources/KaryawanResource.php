@@ -17,6 +17,7 @@ use App\Models\Subdivisi;
 use App\Models\Divisi;
 use Filament\Forms\Get;
 
+
 class KaryawanResource extends Resource
 {
     protected static ?string $model = Karyawan::class;

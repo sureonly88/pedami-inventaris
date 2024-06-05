@@ -109,7 +109,7 @@ class AssetResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('kode_asset'),
+                Tables\Columns\TextColumn::make('kode_asset')->searchable(),
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
                 Tables\Columns\TextColumn::make('tgl_beli'),
                 Tables\Columns\TextColumn::make('gambar'),
