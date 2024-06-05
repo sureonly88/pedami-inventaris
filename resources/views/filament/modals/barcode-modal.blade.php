@@ -12,7 +12,7 @@
                         {{ $record->kode_asset }} ({{ $record->nama_asset }})
                         <!-- {{ $record->karyawan->nama_karyawan }} -->
                         <br/>
-                        {{ $record->karyawan->subdivisi->divisi->nama_divisi }}
+                        {{ $record->penanggung_jawab->subdivisi->divisi->nama_divisi }}
                     </td>
                     <td width="20%">
                     {!! DNS2D::getBarcodeHTML($record->kode_asset, 'QRCODE', 3, 3) !!}
