@@ -41,7 +41,7 @@
                     <td width="60%">
                         {{ $records[$i+1]->kode_asset }} ({{ $records[$i+1]->nama_asset }})
                         <br/>
-                        {{ $records[$i+1]->karyawan->subdivisi->divisi->nama_divisi }}
+                        {{ $records[$i+1]->penanggung_jawab->subdivisi->divisi->nama_divisi }}
                     </td>
                     <td width="20%">
                         
