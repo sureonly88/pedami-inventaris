@@ -40,7 +40,9 @@ class KaryawanResource extends Resource
                     ->maxLength(255),
                 Forms\Components\select::make('jabatan')
                     ->options([
-                        'Ketua Pengurus' => 'Ketua Pengurus',
+                        'Ketua' => 'Ketua',
+                        'Bendahara' => 'Bendahara',
+                        'Sekretaris' => 'Sekretaris',
                         'Manager'=> 'Manager',
                         'Kepala Divisi' => 'Kepala Divisi',
                         'Koordinator' => 'Koordinator',
