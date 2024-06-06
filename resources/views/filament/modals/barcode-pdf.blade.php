@@ -17,7 +17,7 @@
                     <td width="60%">
                         {{ $records[$i]->kode_asset }} ({{ $records[$i]->nama_asset }})
                         <br/>
-                        {{ $records[$i]->karyawan->subdivisi->divisi->nama_divisi }}
+                        {{ $records[$i]->penanggung_jawab->subdivisi->divisi->nama_divisi }}
                     </td>
                     <td width="20%">
                     {!! DNS2D::getBarcodeHTML($records[$i]->kode_asset, 'QRCODE', 3, 3) !!}
