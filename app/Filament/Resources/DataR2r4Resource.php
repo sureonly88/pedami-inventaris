@@ -53,7 +53,7 @@ class DataR2r4Resource extends Resource
                         return $next_sub;
                     })
                     ->maxLength(255),
-                Forms\Components\select::make('jns_brg')
+                Forms\Components\Select::make('jns_brg')
                     ->options([
                         'R2 Operasional' => 'R2 Operasional',
                         'R4 Operasional' => 'R4 Operasional',
