@@ -39,7 +39,7 @@ class UserResource extends Resource
                     ->password()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\select::make('role')
+                Forms\Components\Select::make('role')
                     ->options([
                         'admin' => 'Admin',
                         'user' => 'User',
