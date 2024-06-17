@@ -38,7 +38,7 @@ class KaryawanResource extends Resource
                 Forms\Components\TextInput::make('nama_karyawan')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\select::make('jabatan')
+                Forms\Components\Select::make('jabatan')
                     ->options([
                         'Ketua' => 'Ketua',
                         'Bendahara' => 'Bendahara',
@@ -68,7 +68,7 @@ class KaryawanResource extends Resource
                 //     //->relationship(name: 'subdivisi', titleAttribute: 'divisi.nama_divisi'.'nama_sub')
                 //     ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->divisi->nama_divisi}"." - "."{$record->nama_sub}"),
 
-                Forms\Components\select::make('jkel')
+                Forms\Components\Select::make('jkel')
                 ->options([
                     'Laki-Laki' => 'Laki - Laki',
                     'Perempuan' => 'Perempuan',

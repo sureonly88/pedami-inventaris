@@ -134,7 +134,7 @@ class DataR2r4Resource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('departemen')
                     ->maxLength(255),
-                Forms\Components\select::make('stat')
+                Forms\Components\Select::make('stat')
                     ->options([
                         'Dipakai - Habis Kontrak' => 'Dipakai - Habis Kontrak',
                         'Di pakai - Tidak ada Kontrak' => 'Di pakai - Tidak ada Kontrak',
