@@ -15,7 +15,9 @@ class KontrakWidget extends BaseWidget
         return $table
             ->query(
                 //data_r2r4::query()->where("kode_brg", 'KR001')
-                Kontrak::query()->where(DB::raw("cast(now() as date)"), ">", DB::raw("DATE_SUB(tgl_akhir, INTERVAL 3 MONTH)"))
+                Kontrak::query()
+                    ->where(DB::raw("cast(now() as date)"), ">", DB::raw("DATE_SUB(tgl_akhir, INTERVAL 3 MONTH)"))
+                    ->where("tgl_akhir",">", DB::raw("cast(now() as date)"))
             )
             ->columns([
                 Tables\Columns\TextColumn::make('no_kontrak'),
