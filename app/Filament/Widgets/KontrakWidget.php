@@ -10,14 +10,18 @@ use DB;
 
 class KontrakWidget extends BaseWidget
 {
+    protected static ?int $sort = 3;
+
     public function table(Table $table): Table
     {
         return $table
             ->query(
                 //data_r2r4::query()->where("kode_brg", 'KR001')
+                // Kontrak::query()
+                //     ->where(DB::raw("cast(now() as date)"), ">", DB::raw("DATE_SUB(tgl_akhir, INTERVAL 3 MONTH)"))
+                //     ->where("tgl_akhir",">", DB::raw("cast(now() as date)"))
                 Kontrak::query()
-                    ->where(DB::raw("cast(now() as date)"), ">", DB::raw("DATE_SUB(tgl_akhir, INTERVAL 3 MONTH)"))
-                    ->where("tgl_akhir",">", DB::raw("cast(now() as date)"))
+                    ->where(DB::raw("YEAR(now())"), "=", DB::raw("YEAR(tgl_akhir)"))
             )
             ->columns([
                 Tables\Columns\TextColumn::make('no_kontrak'),

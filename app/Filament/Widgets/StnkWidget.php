@@ -10,6 +10,8 @@ use DB;
 
 class StnkWidget extends BaseWidget
 {
+    protected static ?int $sort = 2;
+    
     public function table(Table $table): Table
     {
         return $table

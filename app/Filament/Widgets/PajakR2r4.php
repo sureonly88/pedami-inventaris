@@ -10,6 +10,8 @@ use DB;
 
 class PajakR2r4 extends BaseWidget
 {
+    protected static ?int $sort = 1;
+
     public function table(Table $table): Table
     {
         return $table
