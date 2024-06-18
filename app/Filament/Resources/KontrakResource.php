@@ -38,7 +38,7 @@ class KontrakResource extends Resource
                     ->maxLength(50),
                 Forms\Components\TextInput::make('judul')
                     ->required()
-                    ->maxLength(50),
+                    ->maxLength(100),
                 Forms\Components\DatePicker::make('tgl_awal')
                     ->required()
                     ->label('Tanggal Awal Kontrak'),
