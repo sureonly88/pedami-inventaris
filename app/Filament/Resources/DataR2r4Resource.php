@@ -128,6 +128,9 @@ class DataR2r4Resource extends Resource
                     ->image()
                     ->imageEditor()
                     ->label('Gambar STNK'),
+                Forms\Components\DatePicker::make('tgl_akhir_kir')
+                    ->native(false)
+                    ->label('Tanggal Akhir Kir'),
                 Forms\Components\TextInput::make('warna')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('pemegang')
@@ -178,6 +181,7 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('no_mesin'),
                 Tables\Columns\TextColumn::make('pajak'),
                 Tables\Columns\TextColumn::make('stnk'),
+                Tables\Columns\TextColumn::make('tgl_akhir_kir'),  
                 Tables\Columns\TextColumn::make('warna'),
                 Tables\Columns\TextColumn::make('pemegang'),
                 Tables\Columns\TextColumn::make('departemen')->searchable(),
