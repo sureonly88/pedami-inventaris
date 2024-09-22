@@ -115,7 +115,7 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('kode_asset')->searchable(),
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
                 Tables\Columns\TextColumn::make('tgl_beli'),
-                Tables\Columns\TextColumn::make('hrg_beli')->money('Rp.'),
+                Tables\Columns\TextColumn::make('hrg_beli')->numeric(decimalPlaces: 0),
                 Tables\Columns\TextColumn::make('gambar'),
                 Tables\Columns\TextColumn::make('kelompok_asset'),
                 Tables\Columns\TextColumn::make('ruangan.ruangan'),

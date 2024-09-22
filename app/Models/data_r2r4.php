@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Kontrak;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\KontrakDetail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class data_r2r4 extends Model
 {
@@ -14,5 +16,10 @@ class data_r2r4 extends Model
     public function kontrak(): BelongsTo
     {
         return $this->belongsTo(Kontrak::class);
+    }
+
+    public function kontrak_detail(): HasMany
+    {
+        return $this->hasMany(KontrakDetail::class);
     }
 }
