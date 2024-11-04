@@ -121,13 +121,15 @@ class DataR2r4Resource extends Resource
                 FileUpload::make('gambar_pajak')
                     ->image()
                     ->imageEditor()
-                    ->label('Gambar Pajak'),
+                    ->label('Gambar Pajak')
+                    ->downloadable(),
                 Forms\Components\DatePicker::make('stnk')
-                    ->native(false),
+                ->native(false),
                 FileUpload::make('gambar_stnk')
                     ->image()
                     ->imageEditor()
-                    ->label('Gambar STNK'),
+                    ->label('Gambar STNK')
+                    ->downloadable(),
                 Forms\Components\DatePicker::make('tgl_akhir_kir')
                     ->native(false)
                     ->label('Tanggal Akhir Kir'),
@@ -143,12 +145,23 @@ class DataR2r4Resource extends Resource
                         'Di pakai - Tidak ada Kontrak' => 'Di pakai - Tidak ada Kontrak',
                         'Dipakai - Kontrak Berjalan' => 'Dipakai - Kontrak Berjalan',
                         'Operasional Pedami' => 'Operasional Pedami',
+                        'Terjual' => 'Terjual',
+                    
                     ]),
+
+                    Forms\Components\TextInput::make('hrg_sewa')
+                        ->prefix('Rp. ')
+                        ->label('Harga Sewa'),
+                    Forms\Components\TextInput::make('deskripsi')
+                        ->maxLength(255)
+                        ->columns(2),
 
                 FileUpload::make('gambar_fisik')
                     ->image()
                     ->imageEditor()
-                    ->label('Foto Fisik'),
+                    //->multiple()
+                    ->label('Foto Fisik')
+                    ->downloadable(),
             ]);
     }
 
@@ -187,6 +200,7 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('departemen')->searchable(),
                 Tables\Columns\TextColumn::make('kontrak_detail.kontrak.no_kontrak'),
                 Tables\Columns\TextColumn::make('stat')->searchable(),
+                Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('jns_brg')

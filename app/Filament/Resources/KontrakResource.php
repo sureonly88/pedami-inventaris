@@ -45,7 +45,8 @@ class KontrakResource extends Resource
                 Forms\Components\DatePicker::make('tgl_akhir')
                     ->required()
                     ->label('Tanggal Akhir Kontrak'),
-                FileUpload::make('file'),
+                FileUpload::make('file')
+                ->downloadable(),
                 Repeater::make('kontrakDetails')
                     ->relationship()
                     ->schema([
