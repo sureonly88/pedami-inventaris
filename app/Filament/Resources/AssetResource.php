@@ -75,7 +75,6 @@ class AssetResource extends Resource
                     ->options([
                         'kantor' => 'Perabotan Kantor',
                         'komputer' => 'Peralatan Komputer',
-                        'Kendaraan Operasional' => 'Kendaraan Operasional',
                     ])->required(),
 
                 Forms\Components\Select::make('ruangan_id')
@@ -98,9 +97,9 @@ class AssetResource extends Resource
 
                 Forms\Components\Select::make('status_barang')
                     ->options([
-                        'Dipakai' => 'Dipakai',
-                        'Rusak' => 'Rusak',
-                        'Dijual' => 'Dijual',
+                        'Baik' => 'Baik',
+                        'Rusak Ringan' => 'Rusak Ringan',
+                        'Disposal' => 'Disposal',
                     ])->required(),
                 Forms\Components\TextInput::make('deskripsi')
                     ->maxLength(255)

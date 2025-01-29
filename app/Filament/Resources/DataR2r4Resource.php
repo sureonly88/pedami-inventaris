@@ -199,6 +199,7 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('pemegang'),
                 Tables\Columns\TextColumn::make('departemen')->searchable(),
                 Tables\Columns\TextColumn::make('kontrak_detail.kontrak.no_kontrak'),
+                Tables\Columns\TextColumn::make('kontrak_detail.kontrak.tgl_akhir'),
                 Tables\Columns\TextColumn::make('stat')->searchable(),
                 Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0),
             ])
