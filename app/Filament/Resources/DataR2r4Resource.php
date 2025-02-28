@@ -130,11 +130,20 @@ class DataR2r4Resource extends Resource
                     ->imageEditor()
                     ->label('Gambar STNK')
                     ->downloadable(),
+                FileUpload::make('bpkb')
+                    ->downloadable(),
                 Forms\Components\DatePicker::make('tgl_akhir_kir')
                     ->native(false)
                     ->label('Tanggal Akhir Kir'),
                 Forms\Components\TextInput::make('warna')
                     ->maxLength(255),
+                Forms\Components\DatePicker::make('service')
+                    ->native(false),
+                FileUpload::make('foto')
+                    ->image()
+                    ->imageEditor()
+                    ->label('Foto Service')
+                    ->downloadable(),
                 Forms\Components\TextInput::make('pemegang')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('departemen')
@@ -194,8 +203,12 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('no_mesin'),
                 Tables\Columns\TextColumn::make('pajak'),
                 Tables\Columns\TextColumn::make('stnk'),
+                Tables\Columns\TextColumn::make('file')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('tgl_akhir_kir'),  
                 Tables\Columns\TextColumn::make('warna'),
+                Tables\Columns\TextColumn::make('service'),
+                Tables\Columns\TextColumn::make('foto'),
                 Tables\Columns\TextColumn::make('pemegang'),
                 Tables\Columns\TextColumn::make('departemen')->searchable(),
                 Tables\Columns\TextColumn::make('kontrak_detail.kontrak.no_kontrak'),

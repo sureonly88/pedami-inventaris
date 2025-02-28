@@ -15,7 +15,7 @@
                         {{ $record->penanggung_jawab->subdivisi->divisi->nama_divisi }}
                     </td>
                     <td width="20%">
-                    {!! DNS2D::getBarcodeHTML($record->kode_asset, 'QRCODE', 3, 3) !!}
+                    {!! DNS2D::getBarcodeHTML("http://92.242.187.223/info-asset/".$record->id, 'QRCODE', 3, 3) !!}
                     </td>
                 </tr>
                 <tr>
