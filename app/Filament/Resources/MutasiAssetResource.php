@@ -36,10 +36,10 @@ class MutasiAssetResource extends Resource
             ->schema([
 
                 Forms\Components\Select::make('asset_id')
-                    ->label('Nama Asset')
+                    ->label('Kode Asset')
                    // ->getOptionLabelFromRecordUsing(fn(Asset $record) => "{$record->id} - {$record->kode_asset} - {$record->nama_asset}")
                     ->options(function (): array {
-                        return Asset::all()->pluck('nama_asset', 'id')->all();
+                        return Asset::all()->pluck('kode_nama', 'id')->all();
                 })
                 ->reactive()
                 ->afterStateUpdated(function (callable $set, $state, Get $get) 
@@ -49,6 +49,7 @@ class MutasiAssetResource extends Resource
                     $set('penanggung_jawab_id_a', $asset->penanggung_jawab_id."-".$asset->penanggung_jawab->nama_karyawan);
                     $set('karyawan_id_a', $asset->karyawan_id."-".$asset->karyawan->nama_karyawan);
                 }),
+                
 
                 Section::make('Sebelum Mutasi')
                     //->description('Prevent abuse by limiting the number of requests per period')
