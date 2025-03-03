@@ -40,7 +40,7 @@ class RuanganResource extends Resource
                         'Jl. Sutoyo S. (Tower PTAM Bandarmasih)' => 'Jl. Sutoyo S. (Tower PTAM Bandarmasih)',
                         'Jl. Cemara (Kantor Bantu PTAM Bandarmasih)' => 'Jl. Cemara (Kantor Bantu PTAM Bandarmasih)',
                         'Jl. A. Yani Km. 2 Kebun Bunga' => 'Jl. A. Yani Km. 2 Kebun Bunga',
-                        'Jl. Beruntung' => 'Beruntung',
+                        'Jl. Beruntung' => 'Jl. Beruntung Km. 7',
                         'Jl. Banjar Indah' => 'Jl. Banjar Indah',
                     ])
             ]);
