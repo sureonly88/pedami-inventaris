@@ -203,8 +203,7 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('no_mesin'),
                 Tables\Columns\TextColumn::make('pajak'),
                 Tables\Columns\TextColumn::make('stnk'),
-                Tables\Columns\TextColumn::make('file')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('file'),
                 Tables\Columns\TextColumn::make('tgl_akhir_kir'),  
                 Tables\Columns\TextColumn::make('warna'),
                 Tables\Columns\TextColumn::make('service'),
