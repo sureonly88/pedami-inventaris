@@ -20,7 +20,7 @@
                         {{ $records[$i]->penanggung_jawab->subdivisi->divisi->nama_divisi }}
                     </td>
                     <td width="20%">
-                    {!! DNS2D::getBarcodeHTML("http://92.242.187.223/info-asset/".$record->id, 'QRCODE', 3, 3) !!}
+                    {!! DNS2D::getBarcodeHTML("http://92.242.187.223/info-asset/".$records[$i]->id, 'QRCODE', 3, 3) !!}
                     </td>
                 </tr>
                 <tr>
@@ -45,7 +45,7 @@
                     </td>
                     <td width="20%">
                         
-                        {!! DNS2D::getBarcodeHTML("http://92.242.187.223/info-asset/".$record->id, 'QRCODE', 3, 3) !!}
+                        {!! DNS2D::getBarcodeHTML("http://92.242.187.223/info-asset/".$records[$i+1]->id, 'QRCODE', 3, 3) !!}
                     </td>
                 </tr>
                 <tr>
