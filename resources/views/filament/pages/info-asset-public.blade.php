@@ -9,7 +9,7 @@
     <p><strong>Kode Asset:</strong> {{ $record->kode_asset }}</p>
     <p><strong>Nama:</strong> {{ $record->nama_asset }}</p>
     <p><strong>Tanggal Pembelian:</strong> {{ $record->tgl_beli }}</p>
-    <p><strong>Harga:</strong> {{ $record->hrg_beli }}</p>
+    <p><strong>Harga: Rp.</strong> {{ number_format($record->hrg_beli, 0, ',', '.') }}</p>
     <p><strong>Ruang/Lokasi:</strong> {{ $record->ruangan->lokasi }}</p>
     <p><strong>Divisi:</strong> {{ $record->ruangan->ruangan }}</p>
     <p><strong>Status Barang:</strong> {{ $record->status_barang }}</p>

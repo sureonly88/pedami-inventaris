@@ -17,12 +17,14 @@ class AssetPolicy
 
     public function update(User $user): bool
     {
-        return $user->role === "admin";
+        //return $user->role === "admin";
+        return in_array($user->role, ['admin', 'operator']);
     }
 
     public function create(User $user): bool
     {
-        return $user->role === "admin";
+        //return $user->role === "admin";
+        return in_array($user->role, ['admin', 'operator']);
     }
 
     public function delete(User $user): bool

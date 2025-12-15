@@ -42,6 +42,7 @@ class UserResource extends Resource
                 Forms\Components\Select::make('role')
                     ->options([
                         'admin' => 'Admin',
+                        'operator' => 'Operator',
                         'user' => 'User',
                     ])->required(),
             ]);
