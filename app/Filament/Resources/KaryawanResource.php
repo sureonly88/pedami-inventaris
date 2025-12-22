@@ -51,22 +51,24 @@ class KaryawanResource extends Resource
 
                 Forms\Components\Select::make('divisi_id')
                     ->label('Divisi')
-                    ->options(function (): array {
-                        return Divisi::all()->pluck('nama_divisi', 'id')->all();
-                })->live(),
+                    ->options(Divisi::pluck('nama_divisi', 'id'))
+                    ->reactive()
+                    ->afterStateUpdated(fn (callable $set) => $set('subdivisi_id', null)),
 
                 Forms\Components\Select::make('subdivisi_id')
                     ->label('Sub Divisi')
-                    ->options(function (Get $get): array {
-                        return Subdivisi::where('divisi_id',$get('divisi_id'))->pluck('nama_sub', 'id')->all();
-                    }),
-                // Forms\Components\Select::make('subdivisi_id')
-                //     ->relationship(
-                //         name: 'subdivisi',
-                //         modifyQueryUsing: fn (Builder $query) => $query->orderBy('nama_sub'),
-                //     )
-                //     //->relationship(name: 'subdivisi', titleAttribute: 'divisi.nama_divisi'.'nama_sub')
-                //     ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->divisi->nama_divisi}"." - "."{$record->nama_sub}"),
+                    ->options(function (Get $get) {
+                        $divisiId = $get('divisi_id');
+
+                        if (!$divisiId) {
+                            return [];
+                        }
+
+                        return Subdivisi::where('divisi_id', $divisiId)
+                            ->pluck('nama_sub', 'id');
+                    })
+                    ->reactive()
+                    ->required(),
 
                 Forms\Components\Select::make('jkel')
                 ->options([
