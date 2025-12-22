@@ -20,6 +20,9 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Get;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Model;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
+use Filament\Forms\Components\DatePicker;
 
 class MutasiAssetResource extends Resource
 {
@@ -45,26 +48,36 @@ class MutasiAssetResource extends Resource
                 ->afterStateUpdated(function (callable $set, $state, Get $get) 
                 {
                     $asset = Asset::find($get('asset_id'));
-                    $set('ruangan_id_a', $asset->ruangan_id ."-".$asset->ruangan->ruangan);
-                    $set('penanggung_jawab_id_a', $asset->penanggung_jawab_id."-".$asset->penanggung_jawab->nama_karyawan);
-                    $set('karyawan_id_a', $asset->karyawan_id."-".$asset->karyawan->nama_karyawan);
+                    $set('ruangan_id_a', $asset->ruangan_id);
+                    $set('penanggung_jawab_id_a', $asset->penanggung_jawab_id);
+                    $set('karyawan_id_a', $asset->karyawan_id);
+
                 }),
                 
 
                 Section::make('Sebelum Mutasi')
                     //->description('Prevent abuse by limiting the number of requests per period')
                     ->schema([
-                        TextInput::make('ruangan_id_a')
-                            ->label('Asal Ruangan')
-                            ->readOnly(),
+                        Forms\Components\Select::make('ruangan_id_a')
+                            ->label('Ruangan Tujuan')
+                            ->options(function (): array {
+                                return Ruangan::all()->pluck('ruangan', 'id')->all();
+                        })
+                        ->disabled(),
 
-                        TextInput::make('penanggung_jawab_id_a')
-                            ->label('Penanggung Jawab Awal')
-                            ->readOnly(),
+                        Forms\Components\Select::make('penanggung_jawab_id_a')
+                            ->label('Penanggung Jawab Tujuan')
+                            ->options(function (): array {
+                                return Karyawan::all()->pluck('nama_karyawan', 'id')->all();
+                        })
+                        ->disabled(),
 
-                        TextInput::make('karyawan_id_a')
-                            ->label('Pemakai Awal')
-                            ->readOnly(),
+                        Forms\Components\Select::make('karyawan_id_a')
+                            ->label('Pemakai Tujuan')
+                            ->options(function (): array {
+                                return Karyawan::all()->pluck('nama_karyawan', 'id')->all();
+                        })
+                        ->disabled(),
                     ]),
                 
                 Section::make('Sesudah Mutasi')
@@ -141,15 +154,32 @@ class MutasiAssetResource extends Resource
                     ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('tgl_mutasi')
+                ->form([
+                    DatePicker::make('from')
+                        ->label('Dari Tanggal'),
+                    DatePicker::make('until')
+                        ->label('Sampai Tanggal'),
+                ])
+                ->query(function ($query, array $data) {
+                    return $query
+                        ->when(
+                            $data['from'],
+                            fn ($query) => $query->whereDate('tgl_mutasi', '>=', $data['from'])
+                        )
+                        ->when(
+                            $data['until'],
+                            fn ($query) => $query->whereDate('tgl_mutasi', '<=', $data['until'])
+                        );
+                }),
             ])
             ->actions([
-                //Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
-                /* Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]), */
+                Tables\Actions\BulkActionGroup::make([
+                    ExportBulkAction::make(),
+                ]),
             ]);
     }
 
@@ -165,7 +195,7 @@ class MutasiAssetResource extends Resource
         return [
             'index' => Pages\ListMutasiAssets::route('/'),
             'create' => Pages\CreateMutasiAsset::route('/create'),
-            'edit' => Pages\EditMutasiAsset::route('/{record}/edit'),
+            //'edit' => Pages\EditMutasiAsset::route('/{record}/edit'),
         ];
     }
 
