@@ -32,15 +32,13 @@ class RuanganResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('lokasi')
                     ->options([
-                        'Jl. Pramuka (PTAM Bandarmasih IPA2)'=> 'Jl. Pramuka (PTAM Bandarmasih IPA2)',
+                        'Jl. Pramuka (PTAM Bandarmasih IPA 2)'=> 'Jl. Pramuka (PTAM Bandarmasih IPA 2)',
                         'Jl. A. Yani Km. 2 (PTAM Bandarmasih)' => 'Jl. A. Yani Km. 2 (PTAM Bandarmasih)',
-                        'Jl. A. Yani Km. 2 (Belakang Pempek Dewi)' => 'Jl. A. Yani Km. 2 (Belakang Pempek Dewi)',
                         'Jl. S. Parman (Booster PTAM Bandarmasih)' => 'Jl. S. Parman (Booster PTAM Bandarmasih)',
-                        'Jl. Beruntung' => 'Jl. Beruntung Km. 7',
+                        'Jl. Beruntung Km. 7' => 'Jl. Beruntung Km. 7',
                         'Jl. Sutoyo S. (Tower PTAM Bandarmasih)' => 'Jl. Sutoyo S. (Tower PTAM Bandarmasih)',
                         'Jl. Cemara (Kantor Bantu PTAM Bandarmasih)' => 'Jl. Cemara (Kantor Bantu PTAM Bandarmasih)',
                         'Jl. A. Yani Km. 2 Kebun Bunga' => 'Jl. A. Yani Km. 2 Kebun Bunga',
-                        'Jl. Beruntung' => 'Jl. Beruntung Km. 7',
                         'Jl. Banjar Indah' => 'Jl. Banjar Indah',
                     ])
             ]);
