@@ -71,7 +71,8 @@ class AssetResource extends Resource
                     ->label('Harga Pembelian'),
                 FileUpload::make('gambar')
                     ->image()
-                    ->imageEditor(),
+                    ->imageEditor()
+                    ->downloadable(),
                 Forms\Components\Select::make('kelompok_asset')
                     ->options([
                         'kantor' => 'Perabotan Kantor',
