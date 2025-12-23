@@ -17,12 +17,15 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\ImageEntry;
+use function PHPUnit\Framework\isNull;
 
 class PermohonanDisposalResource extends Resource
 {
     protected static ?string $model = PermohonanDisposal::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?string $navigationGroup = 'Transaksi';
 
     public static function form(Form $form): Form
     {
@@ -47,7 +50,14 @@ class PermohonanDisposalResource extends Resource
                         if ($asset) {
                             $set('nama_asset', $asset->nama_asset);
                             $set('hrg_beli', $asset->hrg_beli);
-                            $set('gambar_asset', [$asset->gambar]);
+
+                            //dd($asset->gambar);
+                            if(!is_null($asset->gambar)){
+                                $set('gambar_asset', [$asset->gambar]);
+                            }else{
+                                $set('gambar_asset', []);
+                            }
+                            
                         }
                     }),
                 Section::make('Informasi Asset')
@@ -86,13 +96,13 @@ class PermohonanDisposalResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('asset_id')
+                Tables\Columns\TextColumn::make('asset.nama_asset')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tgl_pengajuan')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('dibuat_oleh')
+                Tables\Columns\TextColumn::make('dibuatOleh.nama_karyawan')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('verif_manager')

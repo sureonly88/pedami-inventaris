@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Karyawan;
 use App\Models\Ruangan;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Divisi;
 
 class Asset extends Model
 {
@@ -25,5 +26,10 @@ class Asset extends Model
     public function ruangan(): BelongsTo
     {
         return $this->belongsTo(Ruangan::class);
+    }
+
+    public function divisi(): BelongsTo
+    {
+        return $this->belongsTo(Divisi::class);
     }
 }

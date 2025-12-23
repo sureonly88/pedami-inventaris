@@ -25,6 +25,7 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Divisi;
 
 class AssetResource extends Resource
 {
@@ -79,12 +80,14 @@ class AssetResource extends Resource
 
                 Forms\Components\Select::make('ruangan_id')
                     ->relationship(name: 'ruangan', titleAttribute: 'ruangan')
+                    ->disabled(fn (string $operation): bool => $operation === 'edit')
                     ->getOptionLabelFromRecordUsing(fn(Ruangan $record) => "{$record->ruangan} - {$record->lokasi}")
                     ->label('Ruang/Lokasi'),
 
                 Forms\Components\Select::make('penanggung_jawab_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
                     ->searchable()
+                    ->disabled(fn (string $operation): bool => $operation === 'edit')
                     ->label('Penanggung_jawab'),
                 //Forms\Components\TextInput::make('penanggung_jawab')
                 //->required()
@@ -92,6 +95,7 @@ class AssetResource extends Resource
 
                 Forms\Components\Select::make('karyawan_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
+                    ->disabled(fn (string $operation): bool => $operation === 'edit')
                     ->searchable()
                     ->label('Pemakai'),
 
@@ -121,7 +125,8 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('ruangan.lokasi')->label('Lokasi'),
                 Tables\Columns\TextColumn::make('penanggung_jawab.nama_karyawan')->label('Penanggung_jawab')->searchable(),
                 Tables\Columns\TextColumn::make('karyawan.nama_karyawan')->label('Pemakai')->searchable(),
-                Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi')->searchable(),
+                //Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi')->searchable(),
+                Tables\Columns\TextColumn::make('penanggung_jawab.subdivisi.divisi.nama_divisi')->searchable(),
                 Tables\Columns\TextColumn::make('status_barang'),
                 Tables\Columns\TextColumn::make('deskripsi'),
             ])
