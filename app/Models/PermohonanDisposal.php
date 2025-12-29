@@ -27,4 +27,22 @@ class PermohonanDisposal extends Model
             'id'           // primary key di tabel karyawan
         );
     }
+
+    public function Ketua(): BelongsTo
+    {
+        return $this->belongsTo(
+            Karyawan::class,
+            'ketua_id', // foreign key di tabel ini
+            'id'           // primary key di tabel karyawan
+        );
+    }
+
+    public function Manager(): BelongsTo
+    {
+        return $this->belongsTo(
+            Karyawan::class,
+            'manager_id', // foreign key di tabel ini
+            'id'           // primary key di tabel karyawan
+        );
+    }
 }

@@ -45,6 +45,11 @@ class UserResource extends Resource
                         'operator' => 'Operator',
                         'user' => 'User',
                     ])->required(),
+
+                Forms\Components\Select::make('karyawan_id')
+                    ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
+                    ->searchable()
+                    ->label('Nama Karyawan'),
             ]);
     }
 
@@ -56,8 +61,7 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('karyawan.nama_karyawan')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

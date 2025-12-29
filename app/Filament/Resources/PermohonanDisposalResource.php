@@ -15,9 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\ImageEntry;
-use function PHPUnit\Framework\isNull;
+use Illuminate\Support\Str;
 
 class PermohonanDisposalResource extends Resource
 {
@@ -27,12 +25,44 @@ class PermohonanDisposalResource extends Resource
 
     protected static ?string $navigationGroup = 'Transaksi';
 
+    protected static ?string $navigationLabel = 'Disposal Aset';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('nomor')
+                    ->label('Nomor Surat')
+                    ->required()
+                    ->maxLength(3) // hanya XXX
+                    ->reactive()
+                    ->helperText('Isi hanya kode awal (contoh: 001)')
+                    ->dehydrateStateUsing(function ($state) {
+                        if (!$state) {
+                            return null;
+                        }
+
+                        $bulanRomawi = [
+                            1 => 'I', 2 => 'II', 3 => 'III', 4 => 'IV',
+                            5 => 'V', 6 => 'VI', 7 => 'VII', 8 => 'VIII',
+                            9 => 'IX', 10 => 'X', 11 => 'XI', 12 => 'XII',
+                        ];
+
+                        $bulan = $bulanRomawi[now()->month];
+                        $tahun = now()->year;
+
+                        return strtoupper($state) . ".20/KK-PEDAMI/{$bulan}/{$tahun}";
+                    })
+                    ->formatStateUsing(function ($state) {
+                        // agar saat edit data lama tetap tampil XXX saja
+                        if (!$state) {
+                            return null;
+                        }
+
+                    return Str::before($state, '.');
+                }),
                 Select::make('asset_id')
-                    ->label('Asset')
+                    ->label('Aset')
                     ->searchable()
                     ->preload()
                     ->required()
@@ -44,6 +74,22 @@ class PermohonanDisposalResource extends Resource
                             ])
                     )
                     ->reactive()
+                    ->afterStateHydrated(function ($state, callable $set) {
+                        if (!$state) {
+                            return;
+                        }
+
+                        $asset = Asset::find($state);
+
+                        if ($asset) {
+                            $set('nama_asset', $asset->nama_asset);
+                            $set('hrg_beli', $asset->hrg_beli);
+
+                            $set('gambar_asset',
+                                $asset->gambar ? [$asset->gambar] : []
+                            );
+                        }
+                    })
                     ->afterStateUpdated(function ($state, callable $set) {
                         $asset = Asset::find($state);
 
@@ -60,10 +106,10 @@ class PermohonanDisposalResource extends Resource
                             
                         }
                     }),
-                Section::make('Informasi Asset')
+                Section::make('Informasi Aset')
                     ->schema([
                         TextInput::make('nama_asset')
-                            ->label('Nama Asset')
+                            ->label('Nama Aset')
                             ->disabled()
                             ->dehydrated(false),
 
@@ -76,7 +122,7 @@ class PermohonanDisposalResource extends Resource
                             ->dehydrated(false),
 
                         FileUpload::make('gambar_asset')
-                            ->label('Gambar Asset')
+                            ->label('Gambar Aset')
                             ->image()
                             ->disabled()
                             ->dehydrated(false),
@@ -85,6 +131,19 @@ class PermohonanDisposalResource extends Resource
 
                 Forms\Components\DatePicker::make('tgl_pengajuan')
                     ->required(),
+
+                FileUpload::make('gambar')
+                    ->image()
+                    ->imageEditor()
+                    ->downloadable(),
+                
+                Forms\Components\Select::make('kondisi')
+                    //->disabled(fn () => Auth::user()->role !== 'admin')
+                    //->dehydrated(fn () => Auth::user()->role === 'admin')
+                    ->options([
+                        'Rusak Sebagian' => 'Rusak Sebagian',
+                        'Rusak Total' => 'Rusak Total',
+                    ])->required(),
                 
                 Forms\Components\TextInput::make('keterangan')
                     ->required()
@@ -96,6 +155,8 @@ class PermohonanDisposalResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('nomor')
+                    ->sortable(),               
                 Tables\Columns\TextColumn::make('asset.nama_asset')
                     ->numeric()
                     ->sortable(),
@@ -106,11 +167,31 @@ class PermohonanDisposalResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('verif_manager')
-                    ->numeric()
+                    ->label('Verifikasi Manager')
+                    ->badge()
+                    ->formatStateUsing(function ($state) {
+                        return ($state == 1)
+                            ? 'Sudah Verifikasi'
+                            : 'Belum Verifikasi';
+                    })
+                    ->color(function ($state) {
+                        return ($state == 1) ? 'success' : 'danger';
+                    })
                     ->sortable(),
+                Tables\Columns\TextColumn::make('tgl_verif_manager'),
                 Tables\Columns\TextColumn::make('verif_ketua')
-                    ->numeric()
+                    ->label('Verifikasi Ketua')
+                    ->badge()
+                    ->formatStateUsing(function ($state) {
+                        return ($state == 1)
+                            ? 'Sudah Verifikasi'
+                            : 'Belum Verifikasi';
+                    })
+                    ->color(function ($state) {
+                        return ($state == 1) ? 'success' : 'danger';
+                    })
                     ->sortable(),
+                Tables\Columns\TextColumn::make('tgl_verif_ketua'),
                 Tables\Columns\TextColumn::make('keterangan')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -126,7 +207,26 @@ class PermohonanDisposalResource extends Resource
                 //
             ])
             ->actions([
-                //Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->visible(fn ($record) =>
+                    auth()->user()->role === 'admin'
+                    && $record->verif_manager == 0
+                    && $record->verif_ketua == 0
+                ),
+                Tables\Actions\Action::make('verifikasi')
+                    ->label('Verifikasi')
+                    ->icon('heroicon-o-check-circle')
+                    ->url(fn ($record) => static::getUrl('verify', ['record' => $record])),
+                Tables\Actions\Action::make('cetak')
+                    ->label('Cetak PDF')
+                    ->icon('heroicon-o-printer')
+                    ->color('primary')
+                    ->url(fn ($record) => route('permohonan-disposal.cetak', $record))
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) =>
+                        $record->verif_manager == 1 &&
+                        $record->verif_ketua == 1
+                    ),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
@@ -141,14 +241,14 @@ class PermohonanDisposalResource extends Resource
             //
         ];
     }
-    
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListPermohonanDisposals::route('/'),
             'create' => Pages\CreatePermohonanDisposal::route('/create'),
-            //'edit' => Pages\EditPermohonanDisposal::route('/{record}/edit'),
+            'verify' => Pages\VerifyPermohonanDisposal::route('/{record}/verify'),
+            'edit' => Pages\EditPermohonanDisposal::route('/{record}/edit'),
         ];
     }
 }

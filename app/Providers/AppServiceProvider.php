@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Livewire;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
         // Livewire::setScriptRoute(function ($handle) {
         //     return Route::get('pedami-inventaris/public/livewire/livewire.js', $handle);
         // });
+
+        Carbon::setLocale('id');
 
         Model::unguard();
     }

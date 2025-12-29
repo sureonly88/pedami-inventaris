@@ -9,6 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListMutasiAssets extends ListRecords
 {
     protected static string $resource = MutasiAssetResource::class;
+    protected static ?string $title = 'Mutasi Aset';
 
     protected function getHeaderActions(): array
     {

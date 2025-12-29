@@ -10,6 +10,8 @@ class ListPermohonanDisposals extends ListRecords
 {
     protected static string $resource = PermohonanDisposalResource::class;
 
+    protected static ?string $title = 'Permohonan Disposal';
+
     protected function getHeaderActions(): array
     {
         return [

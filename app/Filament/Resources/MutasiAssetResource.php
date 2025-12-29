@@ -32,6 +32,8 @@ class MutasiAssetResource extends Resource
 
     protected static ?string $navigationGroup = 'Transaksi';
 
+    protected static ?string $navigationLabel = 'Mutasi Aset';
+
 
     public static function form(Form $form): Form
     {

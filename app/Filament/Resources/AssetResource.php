@@ -26,6 +26,7 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Divisi;
+use Illuminate\Support\Facades\Auth;
 
 class AssetResource extends Resource
 {
@@ -40,7 +41,7 @@ class AssetResource extends Resource
 
     protected static ?string $navigationGroup = 'Transaksi';
 
-    protected static ?string $navigationLabel = 'Inventaris Asset';
+    protected static ?string $navigationLabel = 'Inventaris Aset';
 
     public static function form(Form $form): Form
     {
@@ -59,9 +60,11 @@ class AssetResource extends Resource
                         $next_sub = 'KA' . str_repeat('0', 3 - strlen($next_num)) . $next_num;
                         return $next_sub;
                     })
+                    ->label('Kode Aset')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('nama_asset')
                     ->required()
+                    ->label('Nama Aset')
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('tgl_beli')
                     ->native(false)
@@ -72,8 +75,10 @@ class AssetResource extends Resource
                 FileUpload::make('gambar')
                     ->image()
                     ->imageEditor()
+                    ->label('Gambar')
                     ->downloadable(),
                 Forms\Components\Select::make('kelompok_asset')
+                    ->label('Kelompok Aset')
                     ->options([
                         'kantor' => 'Perabotan Kantor',
                         'komputer' => 'Peralatan Komputer',
@@ -101,6 +106,8 @@ class AssetResource extends Resource
                     ->label('Pemakai'),
 
                 Forms\Components\Select::make('status_barang')
+                    ->disabled(fn () => Auth::user()->role !== 'admin')
+                    ->dehydrated(fn () => Auth::user()->role === 'admin')
                     ->options([
                         'Baik' => 'Baik',
                         'Rusak Ringan' => 'Rusak Ringan',

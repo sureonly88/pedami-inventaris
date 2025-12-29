@@ -12,6 +12,8 @@ class CreateMutasiAsset extends CreateRecord
 {
     protected static string $resource = MutasiAssetResource::class;
 
+    protected static ?string $title = 'Create Mutasi Aset';
+
     protected function handleRecordCreation(array $data): Model
     {
 
