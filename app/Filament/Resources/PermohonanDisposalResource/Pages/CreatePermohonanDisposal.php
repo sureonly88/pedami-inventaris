@@ -14,7 +14,7 @@ class CreatePermohonanDisposal extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['dibuat_oleh'] = auth()->user()->karyawan->id;
+        $data['dibuat_oleh'] = auth()->user()->nama_karyawan->id;
         $data['verif_manager'] = 0;
         $data['verif_ketua'] = 0;
 
