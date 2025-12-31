@@ -179,8 +179,6 @@ class PermohonanDisposalResource extends Resource
                     })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tgl_verif_manager'),
-                Tables\Columns\TextColumn::make('kondisi'),
-                Tables\Columns\TextColumn::make('keterangan'),
                 Tables\Columns\TextColumn::make('verif_ketua')
                     ->label('Verifikasi Ketua')
                     ->badge()
