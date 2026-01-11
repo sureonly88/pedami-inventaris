@@ -71,7 +71,16 @@ class AssetResource extends Resource
                     ->label('Tanggal Pembelian'),
                 Forms\Components\TextInput::make('hrg_beli')
                     ->prefix('Rp. ')
-                    ->label('Harga Pembelian'),
+                    ->label('Harga Pembelian')
+                    ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            $angka = preg_replace('/[^0-9]/', '', $state);
+
+                            if ($angka !== '') {
+                            $set('hrg_beli', number_format($angka, 0, ',', '.'));
+                        }
+                        })
+                        ->dehydrateStateUsing(fn ($state) => str_replace('.', '', $state)),
                 FileUpload::make('gambar')
                     ->image()
                     ->imageEditor()
@@ -86,14 +95,14 @@ class AssetResource extends Resource
 
                 Forms\Components\Select::make('ruangan_id')
                     ->relationship(name: 'ruangan', titleAttribute: 'ruangan')
-                    ->disabled(fn (string $operation): bool => $operation === 'edit')
+                    //->disabled(fn (string $operation): bool => $operation === 'edit')
                     ->getOptionLabelFromRecordUsing(fn(Ruangan $record) => "{$record->ruangan} - {$record->lokasi}")
                     ->label('Ruang/Lokasi'),
 
                 Forms\Components\Select::make('penanggung_jawab_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
                     ->searchable()
-                    ->disabled(fn (string $operation): bool => $operation === 'edit')
+                    //->disabled(fn (string $operation): bool => $operation === 'edit')
                     ->label('Penanggung_jawab'),
                 //Forms\Components\TextInput::make('penanggung_jawab')
                 //->required()
@@ -101,7 +110,7 @@ class AssetResource extends Resource
 
                 Forms\Components\Select::make('karyawan_id')
                     ->relationship(name: 'karyawan', titleAttribute: 'nama_karyawan')
-                    ->disabled(fn (string $operation): bool => $operation === 'edit')
+                    //->disabled(fn (string $operation): bool => $operation === 'edit')
                     ->searchable()
                     ->label('Pemakai'),
 
@@ -126,7 +135,9 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('kode_asset')->searchable(),
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
                 Tables\Columns\TextColumn::make('tgl_beli'),
-                Tables\Columns\TextColumn::make('hrg_beli')->numeric(decimalPlaces: 0),
+                Tables\Columns\TextColumn::make('hrg_beli')
+                ->prefix('Rp. ')    
+                ->numeric(decimalPlaces: 0),
                 Tables\Columns\TextColumn::make('gambar'),
                 Tables\Columns\TextColumn::make('kelompok_asset'),
                 Tables\Columns\TextColumn::make('ruangan.ruangan'),

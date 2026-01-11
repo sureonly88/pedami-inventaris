@@ -16,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Illuminate\Support\Str;
+use Filament\Forms\Components\DatePicker;
 
 class PermohonanDisposalResource extends Resource
 {
@@ -204,7 +205,24 @@ class PermohonanDisposalResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('tgl_pengajuan')
+                ->form([
+                    DatePicker::make('from')
+                        ->label('Dari Tanggal'),
+                    DatePicker::make('until')
+                        ->label('Sampai Tanggal'),
+                ])
+                ->query(function ($query, array $data) {
+                    return $query
+                        ->when(
+                            $data['from'],
+                            fn ($query) => $query->whereDate('tgl_pengajuan', '>=', $data['from'])
+                        )
+                        ->when(
+                            $data['until'],
+                            fn ($query) => $query->whereDate('tgl_pengajuan', '<=', $data['until'])
+                        );
+                }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -229,9 +247,9 @@ class PermohonanDisposalResource extends Resource
                     ),
             ])
             ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
+                Tables\Actions\BulkActionGroup::make([
+                     Tables\Actions\DeleteBulkAction::make(),
+                 ]),
             ]);
     }
 

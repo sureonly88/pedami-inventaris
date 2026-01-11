@@ -40,21 +40,28 @@ class MutasiAssetResource extends Resource
         return $form
             ->schema([
 
-                Forms\Components\Select::make('asset_id')
-                    ->label('Kode Asset')
-                   // ->getOptionLabelFromRecordUsing(fn(Asset $record) => "{$record->id} - {$record->kode_asset} - {$record->nama_asset}")
-                    ->options(function (): array {
-                        return Asset::all()->pluck('kode_nama', 'id')->all();
+               Forms\Components\Select::make('asset_id')
+                ->label('Kode Asset')
+                ->searchable()
+                ->getSearchResultsUsing(function (string $search) {
+                return Asset::where('kode_asset', 'like', "%{$search}%")
+                ->orWhere('nama_asset', 'like', "%{$search}%")
+                ->limit(20)
+                ->pluck('kode_nama', 'id');
                 })
+                ->getOptionLabelUsing(fn ($value) => 
+                Asset::find($value)?->kode_nama
+                )
                 ->reactive()
-                ->afterStateUpdated(function (callable $set, $state, Get $get) 
-                {
-                    $asset = Asset::find($get('asset_id'));
-                    $set('ruangan_id_a', $asset->ruangan_id);
-                    $set('penanggung_jawab_id_a', $asset->penanggung_jawab_id);
-                    $set('karyawan_id_a', $asset->karyawan_id);
+                ->afterStateUpdated(function (callable $set, $state) {
+                $asset = Asset::find($state);
 
-                }),
+                if ($asset) {
+                $set('ruangan_id_a', $asset->ruangan_id);
+                $set('penanggung_jawab_id_a', $asset->penanggung_jawab_id);
+                $set('karyawan_id_a', $asset->karyawan_id);
+            }
+    }),
                 
 
                 Section::make('Sebelum Mutasi')
@@ -91,17 +98,29 @@ class MutasiAssetResource extends Resource
                                 return Ruangan::all()->pluck('ruangan', 'id')->all();
                         }),
 
-                        Forms\Components\Select::make('penanggung_jawab_id_t')
-                            ->label('Penanggung Jawab Tujuan')
-                            ->options(function (): array {
-                                return Karyawan::all()->pluck('nama_karyawan', 'id')->all();
-                        }),
+                       Forms\Components\Select::make('penanggung_jawab_id_t')
+                        ->label('Penanggung Jawab Tujuan')
+                        ->searchable()
+                        ->getSearchResultsUsing(function (string $search) {
+                        return Karyawan::where('nama_karyawan', 'like', "%{$search}%")
+                        ->limit(20)
+                        ->pluck('nama_karyawan', 'id');
+                 })
+                        ->getOptionLabelUsing(fn ($value) =>
+                        Karyawan::find($value)?->nama_karyawan
+                ),
 
                         Forms\Components\Select::make('karyawan_id_t')
                             ->label('Pemakai Tujuan')
-                            ->options(function (): array {
-                                return Karyawan::all()->pluck('nama_karyawan', 'id')->all();
-                        }),
+                            ->searchable()
+                            ->getSearchResultsUsing(function (string $search) {
+                            return Karyawan::where('nama_karyawan', 'like', "%{$search}%")
+                            ->limit(20)
+                            ->pluck('nama_karyawan', 'id');
+                        })
+                        ->getOptionLabelUsing(fn ($value) =>
+                            Karyawan::find($value)?->nama_karyawan
+                        ),
                 ]),
 
                 Forms\Components\DatePicker::make('tgl_mutasi')

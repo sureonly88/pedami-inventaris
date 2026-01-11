@@ -11,6 +11,7 @@
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
         "livewire/livewire": "^3.4",
+        "maatwebsite/excel": "^3.1",
         "milon/barcode": "^11.0",
         "pxlrbt/filament-excel": "^2.3",
         "spatie/simple-excel": "^3.4"

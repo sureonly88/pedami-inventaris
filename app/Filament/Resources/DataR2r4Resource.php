@@ -17,10 +17,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\FileUpload;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
-use pxlrbt\FilamentExcel\Exports\ExcelExport;
-use Filament\Forms\Components\ViewField;
-use Filament\Forms\Get;
-use Livewire\Component as Livewire;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Database\Eloquent\Collection;
@@ -160,7 +156,17 @@ class DataR2r4Resource extends Resource
 
                     Forms\Components\TextInput::make('hrg_sewa')
                         ->prefix('Rp. ')
-                        ->label('Harga Sewa'),
+                        ->label('Harga Sewa')
+                        ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            $angka = preg_replace('/[^0-9]/', '', $state);
+
+                            if ($angka !== '') {
+                            $set('hrg_sewa', number_format($angka, 0, ',', '.'));
+                        }
+                        })
+                         ->dehydrateStateUsing(fn ($state) => str_replace('.', '', $state)),
+            
                     Forms\Components\TextInput::make('deskripsi')
                         ->maxLength(255)
                         ->columns(2),
@@ -213,7 +219,8 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('kontrak_detail.kontrak.no_kontrak'),
                 Tables\Columns\TextColumn::make('kontrak_detail.kontrak.tgl_akhir'),
                 Tables\Columns\TextColumn::make('stat')->searchable(),
-                Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0),
+                Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0)
+                ->prefix('Rp. '),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('jns_brg')
