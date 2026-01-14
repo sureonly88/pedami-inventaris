@@ -75,7 +75,7 @@ class KaryawanResource extends Resource
                 ->options([
                     'Laki-Laki' => 'Laki - Laki',
                     'Perempuan' => 'Perempuan',
-                    'Laki-laki & Perempuan' => 'Laki-laki & Perempuan',
+                    'L/P' => 'L/P',
                 ])->required(),
             ]);
     }
