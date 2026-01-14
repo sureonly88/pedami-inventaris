@@ -47,6 +47,7 @@ class KaryawanResource extends Resource
                         'Kepala Divisi' => 'Kepala Divisi',
                         'Koordinator' => 'Koordinator',
                         'Staff' => 'Staf',
+                        'All Karyawan' => 'All Karyawan',
                     ])->required(),
 
                 Forms\Components\Select::make('divisi_id')
