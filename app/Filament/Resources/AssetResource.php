@@ -80,7 +80,15 @@ class AssetResource extends Resource
                             $set('hrg_beli', number_format($angka, 0, ',', '.'));
                         }
                         })
-                        ->dehydrateStateUsing(fn ($state) => str_replace('.', '', $state)),
+                        ->dehydrateStateUsing(function ($state) {
+                            // Jika kosong / null → simpan 0
+                            if (blank($state)) {
+                                return 0;
+                            }
+
+                            // Jika ada nilai → simpan angka murni
+                            return (int) str_replace('.', '', $state);
+                        }),
                 FileUpload::make('gambar')
                     ->image()
                     ->imageEditor()
@@ -115,13 +123,23 @@ class AssetResource extends Resource
                     ->label('Pemakai'),
 
                 Forms\Components\Select::make('status_barang')
-                    ->disabled(fn () => Auth::user()->role !== 'admin')
-                    ->dehydrated(fn () => Auth::user()->role === 'admin')
-                    ->options([
-                        'Baik' => 'Baik',
-                        'Rusak Ringan' => 'Rusak Ringan',
-                        'Disposal' => 'Disposal',
-                    ])->required(),
+    ->disabled(condition: fn (?Asset $record) => $record?->status_barang === 'Disposal')
+    //->dehydrated(fn () => Auth::user()->role === 'admin')
+    ->options(function (?Asset $record) {
+        $options = [
+            'Baik' => 'Baik',
+            'Rusak Ringan' => 'Rusak Ringan',
+        ];
+
+        // Jika sedang VIEW / EDIT data lama
+        // dan status-nya sudah Disposal, tetap tampilkan
+        if ($record?->status_barang === 'Disposal') {
+            $options['Disposal'] = 'Disposal';
+        }
+
+        return $options;
+    })
+    ->required(),
                 Forms\Components\TextInput::make('deskripsi')
                     ->maxLength(255)
                     ->columns(2)
@@ -146,7 +164,7 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('karyawan.nama_karyawan')->label('Pemakai')->searchable(),
                 //Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi')->searchable(),
                 Tables\Columns\TextColumn::make('penanggung_jawab.subdivisi.divisi.nama_divisi')->searchable(),
-                Tables\Columns\TextColumn::make('status_barang'),
+                Tables\Columns\TextColumn::make('status_barang')->searchable(),
                 Tables\Columns\TextColumn::make('deskripsi'),
             ])
             ->filters([

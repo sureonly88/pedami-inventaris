@@ -144,6 +144,14 @@ class MutasiAssetResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('asset.kode_asset')
+                    ->label("Kode Aset")
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('asset.nama_asset')
+                    ->label("Nama Aset")
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('ruangan_a.ruangan')
                     ->label("Ruangan Awal")
                     ->numeric()

@@ -44,5 +44,10 @@ class MutasiAsset extends Model
     {
         return $this->belongsTo(Karyawan::class, 'karyawan_id_t', 'id');
     }
+
+    public function asset()
+    {
+        return $this->belongsTo(Asset::class);
+    }
     
 }
