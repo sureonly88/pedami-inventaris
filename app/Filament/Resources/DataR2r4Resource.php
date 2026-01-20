@@ -20,7 +20,8 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Database\Eloquent\Collection;
-
+use Carbon\Carbon;
+use Illuminate\Support\HtmlString;
 
 class DataR2r4Resource extends Resource
 {
@@ -134,6 +135,7 @@ class DataR2r4Resource extends Resource
                 Forms\Components\TextInput::make('warna')
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('service')
+                    ->label('Tanggal Akhir Service')
                     ->native(false),
                 FileUpload::make('foto')
                     ->image()
@@ -144,20 +146,40 @@ class DataR2r4Resource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('departemen')
                     ->maxLength(255),
-                Forms\Components\Select::make('stat')
-                    ->options([
-                        'Dipakai - Habis Kontrak' => 'Dipakai - Habis Kontrak',
-                        'Di pakai - Tidak ada Kontrak' => 'Di pakai - Tidak ada Kontrak',
-                        'Dipakai - Kontrak Berjalan' => 'Dipakai - Kontrak Berjalan',
-                        'Operasional Pedami' => 'Operasional Pedami',
-                        'Terjual' => 'Terjual',
+                // Forms\Components\Select::make('stat')
+                //     ->options([
+                //         'Habis Kontrak' => 'Habis Kontrak',
+                //         'Di pakai - Tidak ada Kontrak' => 'Di pakai - Tidak ada Kontrak',
+                //         'Sewa - Kontrak Berjalan' => 'Sewa - Kontrak Berjalan',
+                //         'Operasional Pedami' => 'Operasional Pedami',
+                //         'Terjual' => 'Terjual',
                     
-                    ]),
+                //     ]),
+                    Forms\Components\Select::make('stat')
+                    ->disabled(condition: fn (?data_r2r4 $record) => $record?->stat === 'Terjual')
+                    //->dehydrated(fn () => Auth::user()->role === 'admin')
+                    ->options(function (?data_r2r4 $record) {
+                        $options = [
+                        'Habis Kontrak' => 'Habis Kontrak',
+                        'Di pakai - Tidak ada Kontrak' => 'Di pakai - Tidak ada Kontrak',
+                        'Sewa - Kontrak Berjalan' => 'Sewa - Kontrak Berjalan',
+                        'Operasional Pedami' => 'Operasional Pedami',
+                        ];
 
+                        // Jika sedang VIEW / EDIT data lama
+                        // dan status-nya sudah Disposal, tetap tampilkan
+                        if ($record?->stat === 'Terjual') {
+                            $options['Terjual'] = 'Terjual';
+                        }
+
+                        return $options;
+                    })
+                    ->required(),
+                        
                     Forms\Components\TextInput::make('hrg_sewa')
-                        ->prefix('Rp. ')
-                        ->label('Harga Sewa')
-                        ->reactive()
+                    ->prefix('Rp. ')
+                    ->label('Harga Sewa')
+                    ->reactive()
                         ->afterStateUpdated(function ($state, callable $set) {
                             $angka = preg_replace('/[^0-9]/', '', $state);
 
@@ -165,8 +187,15 @@ class DataR2r4Resource extends Resource
                             $set('hrg_sewa', number_format($angka, 0, ',', '.'));
                         }
                         })
-                         ->dehydrateStateUsing(fn ($state) => str_replace('.', '', $state)),
-            
+                        ->dehydrateStateUsing(function ($state) {
+                            // Jika kosong / null → simpan 0
+                            if (blank($state)) {
+                                return 0;
+                            }
+
+                            // Jika ada nilai → simpan angka murni
+                            return (int) str_replace('.', '', $state);
+                        }),
                     Forms\Components\TextInput::make('deskripsi')
                         ->maxLength(255)
                         ->columns(2),
@@ -216,8 +245,46 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('foto'),
                 Tables\Columns\TextColumn::make('pemegang')->searchable(),
                 Tables\Columns\TextColumn::make('departemen')->searchable(),
-                Tables\Columns\TextColumn::make('kontrak_detail.kontrak.no_kontrak'),
-                Tables\Columns\TextColumn::make('kontrak_detail.kontrak.tgl_akhir'),
+                
+                Tables\Columns\TextColumn::make('kontrak_all')
+    ->label('Kontrak')
+    ->html()
+    ->wrap()
+    ->getStateUsing(function ($record) {
+
+        if ($record->kontrak_detail->isEmpty()) {
+            return '-';
+        }
+
+        $today = Carbon::today();
+
+        $html = $record->kontrak_detail
+            ->filter(fn ($d) => $d->kontrak)
+            ->map(function ($d) use ($today) {
+
+                $k = $d->kontrak;
+
+                $aktif = $today->between(
+                    Carbon::parse($k->tgl_awal),
+                    Carbon::parse($k->tgl_akhir)
+                );
+
+                $badge = $aktif
+                    ? '<span class="fi-badge fi-color-success">AKTIF</span>'
+                    : '<span class="fi-badge fi-color-gray">EXPIRED</span>';
+
+                return sprintf(
+                    '%s <b>%s</b> <span class="text-xs text-gray-500">(%s)</span>',
+                    $badge,
+                    e($k->no_kontrak),
+                    Carbon::parse($k->tgl_akhir)->format('d-m-Y')
+                );
+            })
+            ->implode('<br>');
+
+        return new HtmlString($html);
+    }),
+                //Tables\Columns\TextColumn::make('kontrak_detail.kontrak.tgl_akhir'),
                 Tables\Columns\TextColumn::make('stat')->searchable(),
                 Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0)
                 ->prefix('Rp. '),

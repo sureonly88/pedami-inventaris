@@ -123,23 +123,23 @@ class AssetResource extends Resource
                     ->label('Pemakai'),
 
                 Forms\Components\Select::make('status_barang')
-    ->disabled(condition: fn (?Asset $record) => $record?->status_barang === 'Disposal')
-    //->dehydrated(fn () => Auth::user()->role === 'admin')
-    ->options(function (?Asset $record) {
-        $options = [
-            'Baik' => 'Baik',
-            'Rusak Ringan' => 'Rusak Ringan',
-        ];
+                    ->disabled(condition: fn (?Asset $record) => $record?->status_barang === 'Disposal')
+                    //->dehydrated(fn () => Auth::user()->role === 'admin')
+                    ->options(function (?Asset $record) {
+                        $options = [
+                            'Baik' => 'Baik',
+                            'Rusak Ringan' => 'Rusak Ringan',
+                        ];
 
-        // Jika sedang VIEW / EDIT data lama
-        // dan status-nya sudah Disposal, tetap tampilkan
-        if ($record?->status_barang === 'Disposal') {
-            $options['Disposal'] = 'Disposal';
-        }
+                        // Jika sedang VIEW / EDIT data lama
+                        // dan status-nya sudah Disposal, tetap tampilkan
+                        if ($record?->status_barang === 'Disposal') {
+                            $options['Disposal'] = 'Disposal';
+                        }
 
-        return $options;
-    })
-    ->required(),
+                        return $options;
+                    })
+                    ->required(),
                 Forms\Components\TextInput::make('deskripsi')
                     ->maxLength(255)
                     ->columns(2)

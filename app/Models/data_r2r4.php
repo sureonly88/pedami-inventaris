@@ -8,6 +8,7 @@ use App\Models\Kontrak;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\KontrakDetail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Builder;
 
 class data_r2r4 extends Model
 {
@@ -21,5 +22,11 @@ class data_r2r4 extends Model
     public function kontrak_detail(): HasMany
     {
         return $this->hasMany(KontrakDetail::class);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->with(['kontrak_detail.kontrak']);
     }
 }
