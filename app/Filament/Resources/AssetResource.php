@@ -152,20 +152,21 @@ class AssetResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('kode_asset')->searchable(),
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
-                Tables\Columns\TextColumn::make('tgl_beli'),
+                Tables\Columns\TextColumn::make('tgl_beli')->label('Tanggal Beli'),
                 Tables\Columns\TextColumn::make('hrg_beli')
+                ->label('Harga Beli')
                 ->prefix('Rp. ')    
                 ->numeric(decimalPlaces: 0),
-                Tables\Columns\TextColumn::make('gambar'),
+                //Tables\Columns\TextColumn::make('gambar'),
                 Tables\Columns\TextColumn::make('kelompok_asset'),
                 Tables\Columns\TextColumn::make('ruangan.ruangan'),
                 Tables\Columns\TextColumn::make('ruangan.lokasi')->label('Lokasi'),
-                Tables\Columns\TextColumn::make('penanggung_jawab.nama_karyawan')->label('Penanggung_jawab')->searchable(),
+                Tables\Columns\TextColumn::make('penanggung_jawab.nama_karyawan')->label('Penanggung Jawab')->searchable(),
                 Tables\Columns\TextColumn::make('karyawan.nama_karyawan')->label('Pemakai')->searchable(),
                 //Tables\Columns\TextColumn::make('karyawan.subdivisi.divisi.nama_divisi')->searchable(),
                 Tables\Columns\TextColumn::make('penanggung_jawab.subdivisi.divisi.nama_divisi')->searchable(),
                 Tables\Columns\TextColumn::make('status_barang')->searchable(),
-                Tables\Columns\TextColumn::make('deskripsi'),
+                //Tables\Columns\TextColumn::make('deskripsi'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('kelompok_asset')

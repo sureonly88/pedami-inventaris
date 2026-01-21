@@ -229,7 +229,7 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('jns_brg')->label('Jenis Barang')->searchable(),
                 Tables\Columns\TextColumn::make('plat')->searchable(),
                 Tables\Columns\TextColumn::make('nm_brg')->label('Nama Barang')->searchable(),
-                Tables\Columns\TextColumn::make('no_bpkb')->label('No BPKB')->searchable(),
+                //Tables\Columns\TextColumn::make('no_bpkb')->label('No BPKB')->searchable(),
                 // Tables\Columns\TextColumn::make('kontrak.no_kontrak'),
                 // Tables\Columns\TextColumn::make('jangka_wkt_awl'),
                 // Tables\Columns\TextColumn::make('jangka_wkt_akhir'),
@@ -238,11 +238,11 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('no_mesin')->searchable(),
                 Tables\Columns\TextColumn::make('pajak'),
                 Tables\Columns\TextColumn::make('stnk'),
-                Tables\Columns\TextColumn::make('file'),
-                Tables\Columns\TextColumn::make('tgl_akhir_kir'),  
+                //Tables\Columns\TextColumn::make('file'),
+                Tables\Columns\TextColumn::make('tgl_akhir_kir')->label('Tanggal Akhir Kir'),  
                 Tables\Columns\TextColumn::make('warna'),
-                Tables\Columns\TextColumn::make('service'),
-                Tables\Columns\TextColumn::make('foto'),
+                //Tables\Columns\TextColumn::make('service'),
+                //Tables\Columns\TextColumn::make('foto'),
                 Tables\Columns\TextColumn::make('pemegang')->searchable(),
                 Tables\Columns\TextColumn::make('departemen')->searchable(),
                 
@@ -285,7 +285,7 @@ class DataR2r4Resource extends Resource
         return new HtmlString($html);
     }),
                 //Tables\Columns\TextColumn::make('kontrak_detail.kontrak.tgl_akhir'),
-                Tables\Columns\TextColumn::make('stat')->searchable(),
+                Tables\Columns\TextColumn::make('stat')->label('Status')->searchable(),
                 Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0)
                 ->prefix('Rp. '),
             ])
