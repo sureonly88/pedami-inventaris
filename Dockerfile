@@ -1,26 +1,23 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.2-fpm
 
-# Install dependencies yang BENAR untuk Alpine
-RUN set -eux; \
-    apk add --no-cache \
-        bash \
-        git \
-        unzip \
-        curl \
-        icu-dev \
-        libzip-dev \
-        zlib-dev \
-        libpng-dev \
-        libjpeg-turbo-dev \
-        freetype-dev \
-        oniguruma-dev \
-        libxml2-dev \
-        nodejs \
-        npm \
-        $PHPIZE_DEPS \
+# Install system dependencies (Debian)
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    curl \
+    libicu-dev \
+    libzip-dev \
+    zlib1g-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    nodejs \
+    npm \
     && docker-php-ext-configure gd \
-        --with-freetype=/usr/include/ \
-        --with-jpeg=/usr/include/ \
+        --with-freetype \
+        --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         mbstring \
@@ -30,10 +27,12 @@ RUN set -eux; \
         zip \
         intl \
         gd \
-        opcache
+        opcache \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 
+# Install Composer v2
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY . .
@@ -46,4 +45,4 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
 EXPOSE 9000
-CMD ["php-fpm", "-F"]
+CMD ["php-fpm"]
