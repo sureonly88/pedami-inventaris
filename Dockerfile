@@ -3,8 +3,35 @@ FROM php:8.2-fpm-alpine
 
 # Install extensions untuk Laravel 11 + Filament 3
 RUN set -eux; \
-    apk add --no-cache bash git unzip icu-dev libzip-dev zlib-dev libpng-dev oniguruma-dev libxml2-dev \
-    && docker-php-ext-install pdo_mysql mbstring tokenizer xml bcmath zip opcache
+    apk add --no-cache \
+        bash \
+        git \
+        unzip \
+        curl \
+        icu-dev \
+        libzip-dev \
+        zlib-dev \
+        libpng-dev \
+        libjpeg-turbo-dev \
+        freetype-dev \
+        oniguruma-dev \
+        libxml2-dev \
+        nodejs \
+        npm \
+        $PHPIZE_DEPS \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        tokenizer \
+        xml \
+        bcmath \
+        zip \
+        intl \
+        gd \
+        opcache
 
 # Direktori kerja
 WORKDIR /var/www/html
