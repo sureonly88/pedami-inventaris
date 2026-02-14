@@ -1,13 +1,15 @@
 FROM php:8.2-fpm
 
-WORKDIR /var/www/html
-
-# Install tools saja, tanpa compile
+# Install dependency intl
 RUN apt-get update && apt-get install -y \
-    git unzip curl nodejs npm \
+    libicu-dev \
+    git unzip curl \
+    nodejs npm \
+    && docker-php-ext-install intl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Composer
+WORKDIR /var/www/html
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 ENV COMPOSER_MEMORY_LIMIT=-1
 
