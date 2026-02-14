@@ -13,7 +13,13 @@ ENV COMPOSER_MEMORY_LIMIT=-1
 
 COPY . .
 
-RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --no-interaction \
+    --optimize-autoloader \
+    --no-scripts
+
 RUN npm install && npm run build
 
 RUN chown -R www-data:www-data storage bootstrap/cache \
