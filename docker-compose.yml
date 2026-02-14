@@ -1,94 +1,144 @@
 services:
-    laravel.test:
-        build:
-            context: ./vendor/laravel/sail/runtimes/8.3
-            dockerfile: Dockerfile
-            args:
-                WWWGROUP: '${WWWGROUP}'
-        image: sail-8.3/app
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
-        ports:
-            - '${APP_PORT:-80}:80'
-            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
-        environment:
-            WWWUSER: '${WWWUSER}'
-            LARAVEL_SAIL: 1
-            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
-            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
-            IGNITION_LOCAL_SITES_PATH: '${PWD}'
-        volumes:
-            - '.:/var/www/html'
-        networks:
-            - sail
-        depends_on:
-            - mysql
-            - redis
-    mysql:
-        image: 'mysql/mysql-server:8.0'
-        ports:
-            - '${FORWARD_DB_PORT:-3306}:3306'
-        environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ROOT_HOST: '%'
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
-            MYSQL_ALLOW_EMPTY_PASSWORD: 1
-        volumes:
-            - 'sail-mysql:/var/lib/mysql'
-            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - mysqladmin
-                - ping
-                - '-p${DB_PASSWORD}'
-            retries: 3
-            timeout: 5s
-    phpmyadmin:
-        depends_on:
-            - mysql
-        image: phpmyadmin
-        restart: always
-        ports:
-            - 8080:80
-        environment:
-            PMA_HOST: mysql
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
-        networks:
-            - sail
-    redis:
-        image: 'redis:alpine'
-        ports:
-            - '${FORWARD_REDIS_PORT:-6379}:6379'
-        volumes:
-            - 'sail-redis:/data'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - redis-cli
-                - ping
-            retries: 3
-            timeout: 5s
-    mailpit:
-        image: 'axllent/mailpit:latest'
-        ports:
-            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
-            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
-        networks:
-            - sail
-networks:
-    sail:
-        driver: bridge
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - dokploy-network
+    environment:
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_KEY: ${APP_KEY}
+      APP_URL: http://${APP_DOMAIN}
+      DB_CONNECTION: mysql
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - app-storage:/var/www/html/storage
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./timezone.ini:/usr/local/etc/php/conf.d/99-timezone.ini:ro
+      - ./www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+      - ./opcache.ini:/usr/local/etc/php/conf.d/99-opcache.ini:ro
+    ulimits:
+      nofile: 65535
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    restart: always
+    depends_on:
+      - php
+    networks:
+      - dokploy-network
+    volumes:
+      - app-storage:/var/www/html/storage
+      - ./:/var/www/html:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    ulimits:
+      nofile: 65535
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+
+      # Service (nama unik)
+      - "traefik.http.services.web-svc.loadbalancer.server.port=80"
+
+      # Router HTTP → redirect ke HTTPS
+      - "traefik.http.routers.web-http.rule=Host(`pedami-inventaris.com`)"
+      - "traefik.http.routers.web-http.entrypoints=web"
+      - "traefik.http.middlewares.web-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.web-http.middlewares=web-redirect"
+      - "traefik.http.routers.web-http.service=web-svc"
+
+      # Router HTTPS (tautkan eksplisit ke service)
+      - "traefik.http.routers.web-https.rule=Host(`pedami-inventaris.com`)"
+      - "traefik.http.routers.web-https.entrypoints=websecure"
+      - "traefik.http.routers.web-https.tls=true"
+      - "traefik.http.routers.web-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.web-https.service=web-svc"
+
+      # Security headers (pakai nama middleware UNIK)
+      - "traefik.http.middlewares.web-sec.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.web-sec.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.web-sec.headers.stsPreload=true"
+      - "traefik.http.middlewares.web-sec.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.web-sec.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.web-sec.headers.frameDeny=true"
+
+      # Rate limit (nama middleware UNIK)
+      # - "traefik.http.middlewares.web-rate.ratelimit.average=150"
+      # - "traefik.http.middlewares.web-rate.ratelimit.burst=200"
+
+      # PASANG middleware pada router HTTPS DALAM SATU BARIS
+      #- "traefik.http.routers.web-https.middlewares=web-sec,web-rate"
+      - "traefik.http.routers.web-https.middlewares=web-sec"
+
+  mariadb:
+    image: mariadb:11
+    container_name: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_DB_PASSWORD}
+      MARIADB_ROOT_HOST: "%" 
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    command: ["mariadbd", "--skip-host-cache", "--skip-name-resolve"]
+    ulimits:
+      nofile: 1048576
+    volumes:
+      - mariadb-data:/var/lib/mysql
+      - ./my-tuning.cnf:/etc/mysql/conf.d/my-tuning.cnf:ro
+      - ./init-users.sql:/docker-entrypoint-initdb.d/00-init-users.sql:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    networks:
+      - dokploy-network
+    ports:
+     - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mariadb
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=dokploy-network"
+      - "traefik.http.services.pma-svc.loadbalancer.server.port=80"
+
+      - "traefik.http.routers.pma-http.rule=Host(`pma.pedami-inventaris.com`)"
+      - "traefik.http.routers.pma-http.entrypoints=web"
+      - "traefik.http.middlewares.pma-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.pma-http.middlewares=pma-redirect"
+      - "traefik.http.routers.pma-http.service=pma-svc"
+
+      - "traefik.http.routers.pma-https.rule=Host(`pma.pedami-inventaris.com`)"
+      - "traefik.http.routers.pma-https.entrypoints=websecure"
+      - "traefik.http.routers.pma-https.tls=true"
+      - "traefik.http.routers.pma-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.pma-https.service=pma-svc"
+    depends_on:
+      - mariadb
+    networks:
+      - dokploy-network
+
 volumes:
-    sail-mysql:
-        driver: local
-    sail-redis:
-        driver: local
-    sail-meilisearch:
-        driver: local
+  app-storage:
+  mariadb-data:
+
+networks:
+  dokploy-network:
+    external: true
