@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     nodejs npm \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl zip gd \
+    && docker-php-ext-install pdo pdo_mysql \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
