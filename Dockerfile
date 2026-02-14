@@ -1,11 +1,12 @@
 FROM php:8.2-fpm
 
-# Install dependency intl
+# Install dependency untuk intl & zip
 RUN apt-get update && apt-get install -y \
     libicu-dev \
+    libzip-dev \
     git unzip curl \
     nodejs npm \
-    && docker-php-ext-install intl \
+    && docker-php-ext-install intl zip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
