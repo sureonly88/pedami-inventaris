@@ -95,7 +95,6 @@ class AssetResource extends Resource
                     ->imageEditor()
                     ->disk('minio')
                     ->visibility('public')
-                    ->getUploadedFileUrlUsing(fn ($state, $record) => Storage::disk('minio')->temporaryUrl($state, now()->addMinutes(10)))
                     ->label('Gambar')
                     ->downloadable(),
                 Forms\Components\Select::make('kelompok_asset')

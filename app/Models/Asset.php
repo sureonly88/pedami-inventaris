@@ -8,10 +8,21 @@ use App\Models\Karyawan;
 use App\Models\Ruangan;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Divisi;
+use Illuminate\Support\Facades\Storage;
 
 class Asset extends Model
 {
     use HasFactory;
+
+    public function getGambarUrlAttribute(): ?string
+    {
+        if (!$this->gambar) return null;
+
+        return Storage::disk('minio')->temporaryUrl(
+            $this->gambar,
+            now()->addMinutes(10) // URL berlaku 10 menit
+        );
+    }
 
     public function karyawan(): BelongsTo
     {
