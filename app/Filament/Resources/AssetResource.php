@@ -94,6 +94,7 @@ class AssetResource extends Resource
                     ->directory('uploads') 
                     ->disk('minio')
                     ->imageEditor()
+                    ->visibility('public')
                     ->label('Gambar')
                     ->downloadable(),
                 Forms\Components\Select::make('kelompok_asset')
