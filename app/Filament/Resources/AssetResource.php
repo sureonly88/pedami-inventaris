@@ -27,6 +27,7 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Models\Divisi;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class AssetResource extends Resource
 {
@@ -94,7 +95,7 @@ class AssetResource extends Resource
                     ->imageEditor()
                     ->disk('minio')
                     ->visibility('public')
-                    ->getUploadedFileUrlUsing(fn ($state, $record) => Storage::disk('minio')->temporaryUrl($state, now()->addMinutes(10)));
+                    ->getUploadedFileUrlUsing(fn ($state, $record) => Storage::disk('minio')->temporaryUrl($state, now()->addMinutes(10)))
                     ->label('Gambar')
                     ->downloadable(),
                 Forms\Components\Select::make('kelompok_asset')
