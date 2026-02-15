@@ -91,6 +91,7 @@ class AssetResource extends Resource
                         }),
                 FileUpload::make('gambar')
                     ->image()
+                    ->directory('uploads') 
                     ->imageEditor()
                     ->label('Gambar')
                     ->downloadable(),
