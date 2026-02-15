@@ -120,18 +120,24 @@ class PenjualanR2r4Resource extends Resource
 
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\FileUpload::make('gambar_pajak')
+                        ->disk('minio')
+                        ->visibility('public')
                         ->label('Gambar Pajak')
                         ->dehydrated(false)
                         ->image()
                         ->disabled(),
 
                     Forms\Components\FileUpload::make('gambar_stnk')
+                        ->disk('minio')
+                        ->visibility('public')
                         ->label('Gambar STNK')
                         ->dehydrated(false)
                         ->image()
                         ->disabled(),
 
                     Forms\Components\FileUpload::make('gambar_fisik')
+                        ->disk('minio')
+                        ->visibility('public')
                         ->label('Gambar Fisik')
                         ->dehydrated(false)
                         ->image()
