@@ -52,9 +52,9 @@ class PenjualanR2r4Resource extends Resource
                 if ($data) {
                     $set('jns_brg', $data->jns_brg);
                     $set('nm_brg', $data->nm_brg);
-                    $set('gambar_pajak', [$data->gambar_pajak]);
-                    $set('gambar_stnk', [$data->gambar_stnk]);
-                    $set('gambar_fisik', [$data->gambar_fisik]);
+                    $set('gambar_pajak', $data->gambar_pajak ? [$data->gambar_pajak] : null);
+                    $set('gambar_stnk', $data->gambar_stnk ? [$data->gambar_stnk] : null);
+                    $set('gambar_fisik', $data->gambar_fisik ? [$data->gambar_fisik] : null);
                     $set('thn', $data->thn);
                     $set('no_rangka', $data->no_rangka);
                     $set('no_mesin', $data->no_mesin);
@@ -68,9 +68,9 @@ class PenjualanR2r4Resource extends Resource
                 if ($data) {
                     $set('jns_brg', $data->jns_brg);
                     $set('nm_brg', $data->nm_brg);
-                    $set('gambar_pajak', [$data->gambar_pajak]);
-                    $set('gambar_stnk', [$data->gambar_stnk]);
-                    $set('gambar_fisik', [$data->gambar_fisik]);
+                    $set('gambar_pajak', $data->gambar_pajak ? [$data->gambar_pajak] : null);
+                    $set('gambar_stnk', $data->gambar_stnk ? [$data->gambar_stnk] : null);
+                    $set('gambar_fisik', $data->gambar_fisik ? [$data->gambar_fisik] : null);
                     $set('thn', $data->thn);
                     $set('no_rangka', $data->no_rangka);
                     $set('no_mesin', $data->no_mesin);
@@ -124,6 +124,8 @@ class PenjualanR2r4Resource extends Resource
                         ->visibility('public')
                         ->label('Gambar Pajak')
                         ->dehydrated(false)
+                        ->nullable()
+                        ->default(null)
                         ->image()
                         ->disabled(),
 
@@ -132,6 +134,8 @@ class PenjualanR2r4Resource extends Resource
                         ->visibility('public')
                         ->label('Gambar STNK')
                         ->dehydrated(false)
+                        ->nullable()
+                        ->default(null)
                         ->image()
                         ->disabled(),
 
@@ -140,6 +144,8 @@ class PenjualanR2r4Resource extends Resource
                         ->visibility('public')
                         ->label('Gambar Fisik')
                         ->dehydrated(false)
+                        ->nullable()
+                        ->default(null)
                         ->image()
                         ->disabled(),
                 ]),
