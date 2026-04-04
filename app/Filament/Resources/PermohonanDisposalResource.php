@@ -22,9 +22,9 @@ class PermohonanDisposalResource extends Resource
 {
     protected static ?string $model = PermohonanDisposal::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-trash';
 
-    protected static ?string $navigationGroup = 'Transaksi';
+    protected static ?string $navigationGroup = 'Laporan';
 
     protected static ?string $navigationLabel = 'Disposal Aset';
 

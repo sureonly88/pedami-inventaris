@@ -22,11 +22,11 @@ class KaryawanResource extends Resource
 {
     protected static ?string $model = Karyawan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $navigationLabel = 'Karyawan';
 
-    protected static ?string $navigationGroup = 'Setup';
+    protected static ?string $navigationGroup = 'Master Data';
     
     public static function form(Form $form): Form
     {

@@ -33,12 +33,12 @@ class AssetResource extends Resource
 {
     protected static ?string $model = Asset::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
+    // public static function getNavigationBadge(): ?string
+    // {
+    //     return static::getModel()::count();
+    // }
 
     protected static ?string $navigationGroup = 'Transaksi';
 
@@ -74,22 +74,22 @@ class AssetResource extends Resource
                     ->prefix('Rp. ')
                     ->label('Harga Pembelian')
                     ->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            $angka = preg_replace('/[^0-9]/', '', $state);
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $angka = preg_replace('/[^0-9]/', '', $state);
 
-                            if ($angka !== '') {
+                        if ($angka !== '') {
                             $set('hrg_beli', number_format($angka, 0, ',', '.'));
                         }
-                        })
-                        ->dehydrateStateUsing(function ($state) {
-                            // Jika kosong / null → simpan 0
-                            if (blank($state)) {
-                                return 0;
-                            }
+                    })
+                    ->dehydrateStateUsing(function ($state) {
+                        // Jika kosong / null → simpan 0
+                        if (blank($state)) {
+                            return 0;
+                        }
 
-                            // Jika ada nilai → simpan angka murni
-                            return (int) str_replace('.', '', $state);
-                        }),
+                        // Jika ada nilai → simpan angka murni
+                        return (int) str_replace('.', '', $state);
+                    }),
                 FileUpload::make('gambar')
                     ->image()
                     ->imageEditor()
@@ -126,7 +126,7 @@ class AssetResource extends Resource
                     ->label('Pemakai'),
 
                 Forms\Components\Select::make('status_barang')
-                    ->disabled(condition: fn (?Asset $record) => $record?->status_barang === 'Disposal')
+                    ->disabled(condition: fn(?Asset $record) => $record?->status_barang === 'Disposal')
                     //->dehydrated(fn () => Auth::user()->role === 'admin')
                     ->options(function (?Asset $record) {
                         $options = [
@@ -157,9 +157,9 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('nama_asset')->searchable(),
                 Tables\Columns\TextColumn::make('tgl_beli')->label('Tanggal Beli'),
                 Tables\Columns\TextColumn::make('hrg_beli')
-                ->label('Harga Beli')
-                ->prefix('Rp. ')    
-                ->numeric(decimalPlaces: 0),
+                    ->label('Harga Beli')
+                    ->prefix('Rp. ')
+                    ->numeric(decimalPlaces: 0),
                 //Tables\Columns\TextColumn::make('gambar'),
                 Tables\Columns\TextColumn::make('kelompok_asset'),
                 Tables\Columns\TextColumn::make('ruangan.ruangan'),
@@ -185,7 +185,27 @@ class AssetResource extends Resource
                 // redirect('/admin/assets/cetak');
                 //}),
 
-                ExportAction::make(),
+                ExportAction::make()
+                    ->label('Export Laporan Aset')
+                    ->color('success')
+                    ->icon('heroicon-o-document-chart-bar')
+                    ->exports([
+                        \App\Filament\Exports\StyledExcelExport::make('Data Aset')
+                            ->withFilename('Laporan_Aset_Koperasi_Pedami_' . date('Y-m-d'))
+                            ->withColumns([
+                                \pxlrbt\FilamentExcel\Columns\Column::make('kode_asset')->heading('Kode Aset'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('nama_asset')->heading('Nama Aset'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('kelompok_asset')->heading('Kelompok'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('tgl_beli')->heading('Tgl Pembelian'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('hrg_beli')
+                                    ->heading('Harga Beli')
+                                    ->formatStateUsing(fn($state) => $state ? 'Rp ' . number_format($state, 0, ',', '.') : '-'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('ruangan.ruangan')->heading('Lokasi/Ruangan'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('penanggung_jawab.nama_karyawan')->heading('Penanggung Jawab'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('karyawan.nama_karyawan')->heading('Pemakai'),
+                                \pxlrbt\FilamentExcel\Columns\Column::make('status_barang')->heading('Kondisi Fisik'),
+                            ])
+                    ]),
 
                 Tables\Actions\Action::make('pdf')
                     ->label('Download')
@@ -237,7 +257,7 @@ class AssetResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\RiwayatServiceAcsRelationManager::class,
         ];
     }
 

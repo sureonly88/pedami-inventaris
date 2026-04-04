@@ -22,7 +22,7 @@ Route::get('/download/penjualan-selected/{ids}', function ($ids) {
     $ids = explode(',', $ids);
 
     return Excel::download(
-        new PenjualanDirectExport($ids),
+        new PenjualanDirectExport($ids, [], 'Data Terpilih'),
         'data-penjualan-terpilih.xlsx'
     );
 })->name('download.penjualan.selected');

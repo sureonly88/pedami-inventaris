@@ -22,11 +22,11 @@ class KontrakResource extends Resource
 {
     protected static ?string $model = Kontrak::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $navigationLabel = 'Kontrak';
 
-    protected static ?string $navigationGroup = 'Setup';
+    protected static ?string $navigationGroup = 'Transaksi';
 
     public static function form(Form $form): Form
     {

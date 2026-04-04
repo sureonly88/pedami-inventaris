@@ -27,7 +27,7 @@ class DataR2r4Resource extends Resource
 {
     protected static ?string $model = data_r2r4::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-truck';
 
     protected static ?string $navigationLabel = 'Pendataan Roda 2 & 4';
 
@@ -66,6 +66,23 @@ class DataR2r4Resource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->label('Nama Barang'),
+                Forms\Components\TextInput::make('hrg_beli')
+                    ->prefix('Rp. ')
+                    ->label('Harga Pembelian')
+                    ->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            $angka = preg_replace('/[^0-9]/', '', $state);
+
+                            if ($angka !== '') {
+                            $set('hrg_beli', number_format($angka, 0, ',', '.'));
+                        }
+                        })
+                        ->dehydrateStateUsing(function ($state) {
+                            if (blank($state)) {
+                                return 0;
+                            }
+                            return (int) str_replace('.', '', $state);
+                        }),
                 Forms\Components\TextInput::make('no_bpkb')
                     ->maxLength(255)
                     ->label('No BPKB'),
@@ -204,6 +221,7 @@ class DataR2r4Resource extends Resource
                             // Jika ada nilai → simpan angka murni
                             return (int) str_replace('.', '', $state);
                         }),
+                        
                     Forms\Components\TextInput::make('deskripsi')
                         ->maxLength(255)
                         ->columns(2),
@@ -297,6 +315,8 @@ class DataR2r4Resource extends Resource
                 //Tables\Columns\TextColumn::make('kontrak_detail.kontrak.tgl_akhir'),
                 Tables\Columns\TextColumn::make('stat')->label('Status')->searchable(),
                 Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0)
+                ->prefix('Rp. '),
+                Tables\Columns\TextColumn::make('hrg_beli')->label('Harga Beli')->numeric(decimalPlaces: 0)
                 ->prefix('Rp. '),
             ])
             ->filters([

@@ -15,6 +15,11 @@ class ListAssets extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+            \Filament\Actions\ImportAction::make()
+                ->importer(\App\Filament\Imports\AssetImporter::class)
+                ->label('Import Aset Excel')
+                ->color('success')
+                ->icon('heroicon-o-arrow-down-tray'),
             Actions\CreateAction::make(),
         ];
     }

@@ -27,9 +27,9 @@ class PenjualanR2r4Resource extends Resource
 {
     protected static ?string $model = PenjualanR2r4::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $navigationGroup = 'Transaksi';
+    protected static ?string $navigationGroup = 'Laporan';
 
     protected static ?string $navigationLabel = 'Penjualan R2 & R4';
 

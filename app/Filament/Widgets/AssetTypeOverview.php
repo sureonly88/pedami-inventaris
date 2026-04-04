@@ -9,6 +9,9 @@ use App\Models\Asset;
 
 class AssetTypeOverview extends BaseWidget
 {
+    protected static ?int $sort = 2;
+    protected int | string | array $columnSpan = 'full';
+
     protected function getStats(): array
     {
         return [

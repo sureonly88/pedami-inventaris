@@ -12,6 +12,14 @@ class Karyawan extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'nik',
+        'nama_karyawan',
+        'jabatan',
+        'subdivisi_id',
+        'jkel',
+    ];
+
     public function subdivisi(): BelongsTo
     {
         return $this->belongsTo(Subdivisi::class);

@@ -28,7 +28,7 @@ class MutasiAssetResource extends Resource
 {
     protected static ?string $model = MutasiAsset::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
 
     protected static ?string $navigationGroup = 'Transaksi';
 

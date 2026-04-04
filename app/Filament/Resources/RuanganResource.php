@@ -17,11 +17,11 @@ class RuanganResource extends Resource
 {
     protected static ?string $model = Ruangan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
     protected static ?string $navigationLabel = 'Menu Ruangan';
 
-    protected static ?string $navigationGroup = 'Setup';
+    protected static ?string $navigationGroup = 'Master Data';
 
     public static function form(Form $form): Form
     {

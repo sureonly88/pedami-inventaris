@@ -10,7 +10,9 @@ use DB;
 
 class StnkWidget extends BaseWidget
 {
-    protected static ?int $sort = 2;
+    protected static ?int $sort = 6;
+    protected static ?string $heading = 'Jadwal STNK R2 & R4 (Akan Berakhir)';
+    protected int | string | array $columnSpan = 1;
     
     public function table(Table $table): Table
     {

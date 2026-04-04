@@ -10,7 +10,9 @@ use DB;
 
 class PajakR2r4 extends BaseWidget
 {
-    protected static ?int $sort = 1;
+    protected static ?int $sort = 5;
+    protected static ?string $heading = 'Jadwal Pajak R2 & R4 (Akan Berakhir)';
+    protected int | string | array $columnSpan = 1;
 
     public function table(Table $table): Table
     {

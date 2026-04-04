@@ -10,6 +10,9 @@ class ListSubdivisis extends ListRecords
 {
     protected static string $resource = SubdivisiResource::class;
 
+    protected static ?string $title = 'Subdivisi';
+
+
     protected function getHeaderActions(): array
     {
         return [

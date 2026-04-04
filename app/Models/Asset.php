@@ -32,4 +32,8 @@ class Asset extends Model
     {
         return $this->belongsTo(Divisi::class);
     }
+    public function riwayatServiceAcs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(RiwayatServiceAc::class);
+    }
 }

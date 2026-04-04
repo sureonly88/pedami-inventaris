@@ -24,6 +24,16 @@ class data_r2r4 extends Model
         return $this->hasMany(KontrakDetail::class);
     }
 
+    public function mutasi_r2r4s(): HasMany
+    {
+        return $this->hasMany(MutasiR2R4::class, 'data_r2r4_id', 'id');
+    }
+
+    public function riwayatServis(): HasMany
+    {
+        return $this->hasMany(RiwayatServisR2r4::class, 'data_r2r4_id');
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
