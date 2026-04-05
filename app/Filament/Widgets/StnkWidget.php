@@ -24,7 +24,26 @@ class StnkWidget extends BaseWidget
             ->columns([
                 Tables\Columns\TextColumn::make('plat'),
                 Tables\Columns\TextColumn::make('nm_brg'),
-                Tables\Columns\TextColumn::make('stnk'),
+                Tables\Columns\TextColumn::make('stnk')
+                    ->badge()
+                    ->color(function ($state) {
+                        if (!$state) {
+                            return 'gray';
+                        }
+
+                        $stnkDate = \Carbon\Carbon::parse($state)->startOfDay();
+                        $today = \Carbon\Carbon::now()->startOfDay();
+
+                        if ($stnkDate->lt($today)) {
+                            return 'danger'; // Kadaluarsa (Merah)
+                        }
+
+                        if ($today->diffInDays($stnkDate) <= 30) {
+                            return 'warning'; // Hari ini sampai 30 hari ke depan (Kuning)
+                        }
+
+                        return 'success'; // Lebih dari 30 hari (Hijau)
+                    }),
             ])
             ->defaultPaginationPageOption(5);
     }

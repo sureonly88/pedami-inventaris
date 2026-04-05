@@ -24,7 +24,26 @@ class PajakR2r4 extends BaseWidget
             ->columns([
                 Tables\Columns\TextColumn::make('plat'),
                 Tables\Columns\TextColumn::make('nm_brg'),
-                Tables\Columns\TextColumn::make('pajak'),
+                Tables\Columns\TextColumn::make('pajak')
+                    ->badge()
+                    ->color(function ($state) {
+                        if (!$state) {
+                            return 'gray';
+                        }
+
+                        $pajakDate = \Carbon\Carbon::parse($state)->startOfDay();
+                        $today = \Carbon\Carbon::now()->startOfDay();
+
+                        if ($pajakDate->lt($today)) {
+                            return 'danger'; // Kadaluarsa (Merah)
+                        }
+
+                        if ($today->diffInDays($pajakDate) <= 30) {
+                            return 'warning'; // Hari ini sampai 30 hari (Kuning)
+                        }
+
+                        return 'success'; // Lebih dari 30 hari (Hijau)
+                    }),
             ])
             ->defaultPaginationPageOption(5);
     }
