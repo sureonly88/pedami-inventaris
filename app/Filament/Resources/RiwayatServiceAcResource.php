@@ -136,6 +136,7 @@ class RiwayatServiceAcResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateHeading('tidak ada riwayat service')
             ->filters([
                 //
             ])

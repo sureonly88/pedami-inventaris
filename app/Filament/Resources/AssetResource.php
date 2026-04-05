@@ -171,6 +171,7 @@ class AssetResource extends Resource
                 Tables\Columns\TextColumn::make('status_barang')->searchable(),
                 //Tables\Columns\TextColumn::make('deskripsi'),
             ])
+            ->emptyStateHeading('tidak ada data aset')
             ->filters([
                 Tables\Filters\SelectFilter::make('kelompok_asset')
                     ->options([

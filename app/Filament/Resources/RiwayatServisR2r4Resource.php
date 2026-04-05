@@ -136,6 +136,7 @@ class RiwayatServisR2r4Resource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->emptyStateHeading('tidak ada riwayat service')
             ->filters([
                 //
             ])

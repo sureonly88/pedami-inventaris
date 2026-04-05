@@ -319,6 +319,7 @@ class DataR2r4Resource extends Resource
                 Tables\Columns\TextColumn::make('hrg_beli')->label('Harga Beli')->numeric(decimalPlaces: 0)
                 ->prefix('Rp. '),
             ])
+            ->emptyStateHeading('tidak ada data kendaraan')
             ->filters([
                 Tables\Filters\SelectFilter::make('jns_brg')
                     ->options([
@@ -365,7 +366,7 @@ class DataR2r4Resource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\RiwayatServisRelationManager::class,
         ];
     }
 

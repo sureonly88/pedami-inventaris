@@ -323,6 +323,36 @@ class AdminPanelProvider extends PanelProvider
 BLADE);
                 },
             )
+            ->renderHook(
+                'panels::user-menu.before',
+                fn (): string => Blade::render('
+                    <!-- 1. Date & Time (Stays on Right) -->
+                    <div class="hidden lg:flex items-center gap-8 mr-12 border-l border-pink-100 pl-8 transition-all">
+                        <div class="flex flex-col items-end gap-2 whitespace-nowrap text-right">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-[0.25em] leading-none mb-0.5">
+                                {{ now()->locale(\'id\')->translatedFormat(\'l, d F Y\') }}
+                            </span>
+                            <span id="live-clock" class="text-2xl font-black tracking-[-0.05em] text-[#be185d] font-mono leading-none">
+                                {{ now()->format(\'H:i:s\') }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <script>
+                        function updateClock() {
+                            const now = new Date();
+                            const hours = String(now.getHours()).padStart(2, "0");
+                            const minutes = String(now.getMinutes()).padStart(2, "0");
+                            const seconds = String(now.getSeconds()).padStart(2, "0");
+                            const clockEl = document.getElementById("live-clock");
+                            if (clockEl) {
+                                clockEl.textContent = `${hours}:${minutes}:${seconds}`;
+                            }
+                        }
+                        setInterval(updateClock, 1000);
+                    </script>
+                '),
+            )
             ->colors([
                 'primary' => Color::Sky,
                 'gray' => Color::Slate,
