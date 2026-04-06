@@ -98,7 +98,7 @@ services:
     volumes:
       - mariadb-data:/var/lib/mysql
       - ./my-tuning.cnf:/etc/mysql/conf.d/my-tuning.cnf:ro
-      - ./init-users.sql:/docker-entrypoint-initdb.d/00-init-users.sql:ro
+      # - ./init-users.sql:/docker-entrypoint-initdb.d/00-init-users.sql:ro
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
     networks:
