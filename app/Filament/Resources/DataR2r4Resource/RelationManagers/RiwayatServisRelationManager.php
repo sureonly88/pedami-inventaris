@@ -42,7 +42,7 @@ class RiwayatServisRelationManager extends RelationManager
                     ->label('Catatan Tambahan')
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('struk_foto')
-                    ->disk('public')
+                    ->disk('minio')
                     ->visibility('public')
                     ->label('Foto Nota/Struk (Opsional)')
                     ->image()
@@ -74,8 +74,8 @@ class RiwayatServisRelationManager extends RelationManager
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('struk_foto')
                     ->label('Struk')
-                    ->disk('public')
-                    ->url(fn($record) => $record->struk_foto ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->struk_foto) : null, true)
+                    ->disk('minio')
+                    ->url(fn($record) => $record->struk_foto ? \Illuminate\Support\Facades\Storage::disk('minio')->url($record->struk_foto) : null, true)
                     ->circular(),
             ])
             ->emptyStateHeading('tidak ada riwayat service')

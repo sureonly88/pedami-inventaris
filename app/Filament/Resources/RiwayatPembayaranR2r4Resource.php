@@ -104,7 +104,7 @@ class RiwayatPembayaranR2r4Resource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('bukti_foto')
                             ->label('Foto Bukti / Nota Pembayaran')
-                            ->disk('public')
+                            ->disk('minio')
                             ->visibility('public')
                             ->image()
                             ->openable()
@@ -145,8 +145,8 @@ class RiwayatPembayaranR2r4Resource extends Resource
                     ->sortable(),
                 Tables\Columns\ImageColumn::make('bukti_foto')
                     ->label('Bukti')
-                    ->disk('public')
-                    ->url(fn($record) => $record->bukti_foto ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->bukti_foto) : null, true)
+                    ->disk('minio')
+                    ->url(fn($record) => $record->bukti_foto ? \Illuminate\Support\Facades\Storage::disk('minio')->url($record->bukti_foto) : null, true)
                     ->circular(),
             ])
             ->filters([

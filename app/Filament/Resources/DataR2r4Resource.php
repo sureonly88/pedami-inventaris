@@ -133,7 +133,7 @@ class DataR2r4Resource extends Resource
                 Forms\Components\DatePicker::make('pajak')
                     ->native(false),
                 FileUpload::make('gambar_pajak')
-                    ->disk('public')
+                    ->disk('minio')
                     ->visibility('public')
                     ->image()
                     ->imageEditor()
@@ -142,14 +142,14 @@ class DataR2r4Resource extends Resource
                 Forms\Components\DatePicker::make('stnk')
                 ->native(false),
                 FileUpload::make('gambar_stnk')
-                    ->disk('public')
+                    ->disk('minio')
                     ->visibility('public')
                     ->image()
                     ->imageEditor()
                     ->label('Gambar STNK')
                     ->downloadable(),
                 FileUpload::make('bpkb')
-                    ->disk('public')
+                    ->disk('minio')
                     ->visibility('public')
                     ->downloadable(),
                 Forms\Components\DatePicker::make('tgl_akhir_kir')
@@ -161,7 +161,7 @@ class DataR2r4Resource extends Resource
                     ->label('Tanggal Akhir Service')
                     ->native(false),
                 FileUpload::make('foto')
-                    ->disk('public')
+                    ->disk('minio')
                     ->visibility('public')
                     ->image()
                     ->imageEditor()
@@ -227,7 +227,7 @@ class DataR2r4Resource extends Resource
                         ->columns(2),
 
                 FileUpload::make('gambar_fisik')
-                    ->disk('public')
+                    ->disk('minio')
                     ->visibility('public')
                     ->image()
                     ->imageEditor()
