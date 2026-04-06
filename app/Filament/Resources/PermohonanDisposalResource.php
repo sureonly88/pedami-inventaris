@@ -123,7 +123,7 @@ class PermohonanDisposalResource extends Resource
                             ->dehydrated(false),
 
                         FileUpload::make('gambar_asset')
-                            ->disk('minio')
+                            ->disk('public')
                             ->visibility('public')
                             ->label('Gambar Aset')
                             ->image()
@@ -136,7 +136,7 @@ class PermohonanDisposalResource extends Resource
                     ->required(),
 
                 FileUpload::make('gambar')
-                    ->disk('minio')
+                    ->disk('public')
                     ->visibility('public')
                     ->image()
                     ->imageEditor()

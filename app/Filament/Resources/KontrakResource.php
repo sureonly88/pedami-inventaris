@@ -46,7 +46,7 @@ class KontrakResource extends Resource
                     ->required()
                     ->label('Tanggal Akhir Kontrak'),
                 FileUpload::make('file')
-                    ->disk('minio')
+                    ->disk('public')
                     ->visibility('public')
                     ->downloadable(),
                 Repeater::make('kontrakDetails')

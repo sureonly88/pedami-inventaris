@@ -93,7 +93,7 @@ class AssetResource extends Resource
                 FileUpload::make('gambar')
                     ->image()
                     ->imageEditor()
-                    ->disk('minio')
+                    ->disk('public')
                     ->visibility('public')
                     ->label('Gambar')
                     ->downloadable(),

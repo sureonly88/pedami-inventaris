@@ -96,9 +96,11 @@ class RiwayatServiceAcResource extends Resource
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('bukti_foto')
                             ->label('Foto Bukti / Nota')
-                            ->disk('minio')
+                            ->disk('public')
                             ->visibility('public')
                             ->image()
+                            ->openable()
+                            ->downloadable()
                             ->columnSpanFull(),
                     ])->columns(2),
             ]);
@@ -129,7 +131,8 @@ class RiwayatServiceAcResource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('bukti_foto')
                     ->label('Bukti')
-                    ->disk('minio')
+                    ->disk('public')
+                    ->url(fn($record) => $record->bukti_foto ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->bukti_foto) : null, true)
                     ->circular(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

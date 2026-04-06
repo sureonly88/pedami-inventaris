@@ -42,10 +42,12 @@ class RiwayatServisRelationManager extends RelationManager
                     ->label('Catatan Tambahan')
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('struk_foto')
-                    ->disk('minio')
+                    ->disk('public')
                     ->visibility('public')
                     ->label('Foto Nota/Struk (Opsional)')
                     ->image()
+                    ->openable()
+                    ->downloadable()
                     ->columnSpanFull(),
             ]);
     }
@@ -70,6 +72,11 @@ class RiwayatServisRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('bengkel')
                     ->label('Bengkel')
                     ->searchable(),
+                Tables\Columns\ImageColumn::make('struk_foto')
+                    ->label('Struk')
+                    ->disk('public')
+                    ->url(fn($record) => $record->struk_foto ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->struk_foto) : null, true)
+                    ->circular(),
             ])
             ->emptyStateHeading('tidak ada riwayat service')
             ->filters([

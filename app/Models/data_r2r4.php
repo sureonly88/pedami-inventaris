@@ -34,6 +34,11 @@ class data_r2r4 extends Model
         return $this->hasMany(RiwayatServisR2r4::class, 'data_r2r4_id');
     }
 
+    public function riwayatPembayaran(): HasMany
+    {
+        return $this->hasMany(RiwayatPembayaranR2r4::class, 'data_r2r4_id');
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

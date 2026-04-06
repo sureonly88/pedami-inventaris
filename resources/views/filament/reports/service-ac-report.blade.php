@@ -58,7 +58,8 @@
     </table>
 
     <div class="footer">
-        Dicetak pada: {{ date('d-m-Y H:i:s') }}
+        Dicetak pada: {{ date('d-m-Y H:i:s') }}<br>
+        Oleh: {{ auth()->user()->name }}
     </div>
 </body>
 </html>

@@ -120,7 +120,7 @@ class PenjualanR2r4Resource extends Resource
 
                 Forms\Components\Grid::make(3)->schema([
                     Forms\Components\FileUpload::make('gambar_pajak')
-                        ->disk('minio')
+                        ->disk('public')
                         ->visibility('public')
                         ->label('Gambar Pajak')
                         ->dehydrated(false)
@@ -130,7 +130,7 @@ class PenjualanR2r4Resource extends Resource
                         ->disabled(),
 
                     Forms\Components\FileUpload::make('gambar_stnk')
-                        ->disk('minio')
+                        ->disk('public')
                         ->visibility('public')
                         ->label('Gambar STNK')
                         ->dehydrated(false)
@@ -140,7 +140,7 @@ class PenjualanR2r4Resource extends Resource
                         ->disabled(),
 
                     Forms\Components\FileUpload::make('gambar_fisik')
-                        ->disk('minio')
+                        ->disk('public')
                         ->visibility('public')
                         ->label('Gambar Fisik')
                         ->dehydrated(false)

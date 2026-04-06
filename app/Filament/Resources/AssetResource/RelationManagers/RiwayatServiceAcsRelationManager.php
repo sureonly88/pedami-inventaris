@@ -38,9 +38,11 @@ class RiwayatServiceAcsRelationManager extends RelationManager
                 Forms\Components\Textarea::make('keterangan')
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('bukti_foto')
-                    ->disk('minio')
+                    ->disk('public')
                     ->visibility('public')
                     ->image()
+                    ->openable()
+                    ->downloadable()
                     ->columnSpanFull(),
             ]);
     }
@@ -61,7 +63,9 @@ class RiwayatServiceAcsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('teknisi')
                     ->label('Teknisi'),
                 Tables\Columns\ImageColumn::make('bukti_foto')
-                    ->disk('minio')
+                    ->label('Bukti')
+                    ->disk('public')
+                    ->url(fn($record) => $record->bukti_foto ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->bukti_foto) : null, true)
                     ->circular(),
             ])
             ->emptyStateHeading('tidak ada riwayat service')

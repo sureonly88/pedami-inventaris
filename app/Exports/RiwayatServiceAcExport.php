@@ -81,15 +81,19 @@ class RiwayatServiceAcExport implements FromCollection, WithHeadings, WithMappin
                 $highestColumn = $sheet->getHighestColumn();
                 $highestRow = $sheet->getHighestRow();
 
-                $sheet->insertNewRowBefore(1, 4);
+                $sheet->insertNewRowBefore(1, 6);
 
                 $sheet->setCellValue('A1', 'LAPORAN RIWAYAT SERVICE ASET');
                 $sheet->setCellValue('A2', 'KOPERASI KONSUMEN PEDAMI');
                 $sheet->setCellValue('A3', 'Periode: ' . $this->period);
+                $sheet->setCellValue('A4', 'Dicetak pada: ' . date('d/m/Y H:i:s'));
+                $sheet->setCellValue('A5', 'Oleh: ' . auth()->user()->name);
 
                 $sheet->mergeCells('A1:' . $highestColumn . '1');
                 $sheet->mergeCells('A2:' . $highestColumn . '2');
                 $sheet->mergeCells('A3:' . $highestColumn . '3');
+                $sheet->mergeCells('A4:' . $highestColumn . '4');
+                $sheet->mergeCells('A5:' . $highestColumn . '5');
 
                 $styleCenter = [
                     'alignment' => [
@@ -97,11 +101,11 @@ class RiwayatServiceAcExport implements FromCollection, WithHeadings, WithMappin
                         'vertical' => Alignment::VERTICAL_CENTER,
                     ]
                 ];
-                $sheet->getStyle('A1:' . $highestColumn . '3')->applyFromArray($styleCenter);
+                $sheet->getStyle('A1:' . $highestColumn . '5')->applyFromArray($styleCenter);
                 $sheet->getStyle('A1')->getFont()->setSize(14)->setBold(true);
                 $sheet->getStyle('A2')->getFont()->setSize(12)->setBold(true);
 
-                $sheet->getStyle('A5:' . $highestColumn . '5')->applyFromArray([
+                $sheet->getStyle('A7:' . $highestColumn . '7')->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['argb' => 'FFE5E7EB'],
@@ -111,7 +115,7 @@ class RiwayatServiceAcExport implements FromCollection, WithHeadings, WithMappin
                     ],
                 ]);
 
-                $sheet->getStyle('A5:' . $highestColumn . $highestRow + 4)->applyFromArray([
+                $sheet->getStyle('A7:' . $highestColumn . $highestRow + 6)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
@@ -119,7 +123,7 @@ class RiwayatServiceAcExport implements FromCollection, WithHeadings, WithMappin
                     ],
                 ]);
 
-                $sheet->getStyle('F6:F' . ($highestRow + 4))->getNumberFormat()
+                $sheet->getStyle('F8:F' . ($highestRow + 6))->getNumberFormat()
                     ->setFormatCode('"Rp "#,##0_-');
             },
         ];

@@ -94,10 +94,12 @@ class RiwayatServisR2r4Resource extends Resource
                             ->label('Catatan Tambahan')
                             ->columnSpanFull(),
                         Forms\Components\FileUpload::make('struk_foto')
-                            ->disk('minio')
+                            ->disk('public')
                             ->visibility('public')
                             ->label('Foto Nota/Struk (Opsional)')
                             ->image()
+                            ->openable()
+                            ->downloadable()
                             ->columnSpanFull(),
                     ])->columns(2),
             ]);
@@ -129,7 +131,8 @@ class RiwayatServisR2r4Resource extends Resource
                     ->searchable(),
                 Tables\Columns\ImageColumn::make('struk_foto')
                     ->label('Struk')
-                    ->disk('minio')
+                    ->disk('public')
+                    ->url(fn($record) => $record->struk_foto ? \Illuminate\Support\Facades\Storage::disk('public')->url($record->struk_foto) : null, true)
                     ->circular(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
