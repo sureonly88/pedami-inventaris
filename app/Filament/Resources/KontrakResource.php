@@ -41,10 +41,45 @@ class KontrakResource extends Resource
                     ->maxLength(100),
                 Forms\Components\DatePicker::make('tgl_awal')
                     ->required()
-                    ->label('Tanggal Awal Kontrak'),
+                    ->label('Tanggal Awal Kontrak')
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, $get, $set) {
+                        $tglAkhir = $get('tgl_akhir');
+                        if ($state && $tglAkhir) {
+                            $start = \Carbon\Carbon::parse($state);
+                            $end = \Carbon\Carbon::parse($tglAkhir);
+                            $diff = $start->diffInMonths($end);
+                            $set('masa_sewa', $diff);
+                        }
+                    }),
                 Forms\Components\DatePicker::make('tgl_akhir')
                     ->required()
-                    ->label('Tanggal Akhir Kontrak'),
+                    ->label('Tanggal Akhir Kontrak')
+                    ->reactive()
+                    ->afterStateUpdated(function ($state, $get, $set) {
+                        $tglAwal = $get('tgl_awal');
+                        if ($tglAwal && $state) {
+                            $start = \Carbon\Carbon::parse($tglAwal);
+                            $end = \Carbon\Carbon::parse($state);
+                            $diff = $start->diffInMonths($end);
+                            $set('masa_sewa', $diff);
+                        }
+                    }),
+                Forms\Components\TextInput::make('masa_sewa')
+                    ->label('Masa Sewa')
+                    ->suffix('Bulan')
+                    ->readOnly()
+                    ->dehydrated(false)
+                    ->numeric()
+                    ->placeholder('Otomatis terisi...')
+                    ->default(function ($record) {
+                        if ($record && $record->tgl_awal && $record->tgl_akhir) {
+                            $start = \Carbon\Carbon::parse($record->tgl_awal);
+                            $end = \Carbon\Carbon::parse($record->tgl_akhir);
+                            return $start->diffInMonths($end);
+                        }
+                        return null;
+                    }),
                 FileUpload::make('file')
                     ->disk('minio')
                     ->visibility('public')
@@ -89,11 +124,74 @@ class KontrakResource extends Resource
                 Tables\Columns\TextColumn::make('tgl_akhir')
                     ->date()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('masa_sewa')
+                    ->label('Masa Sewa')
+                    ->getStateUsing(function ($record) {
+                        if ($record->tgl_awal && $record->tgl_akhir) {
+                            $start = \Carbon\Carbon::parse($record->tgl_awal);
+                            $end = \Carbon\Carbon::parse($record->tgl_akhir);
+                            return $start->diffInMonths($end) . ' Bulan';
+                        }
+                        return '-';
+                    }),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->getStateUsing(function ($record) {
+                        $now = now()->startOfDay();
+                        $start = \Carbon\Carbon::parse($record->tgl_awal)->startOfDay();
+                        $end = \Carbon\Carbon::parse($record->tgl_akhir)->startOfDay();
+
+                        if ($now->gt($end)) {
+                            return 'EXPIRED';
+                        }
+
+                        if ($now->diffInDays($end, false) <= 30 && $now->diffInDays($end, false) >= 0) {
+                            return 'SEGERA BERAKHIR';
+                        }
+
+                        if ($now->between($start, $end)) {
+                            return 'AKTIF';
+                        }
+
+                        if ($now->lt($start)) {
+                            return 'AKAN DATANG';
+                        }
+
+                        return 'UNKNOWN';
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'AKTIF' => 'success',
+                        'SEGERA BERAKHIR' => 'warning',
+                        'EXPIRED' => 'danger',
+                        'AKAN DATANG' => 'info',
+                        default => 'gray',
+                    }),
                 Tables\Columns\TextColumn::make('file')
                     ->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Filter Status')
+                    ->options([
+                        'aktif' => 'AKTIF',
+                        'expired' => 'EXPIRED',
+                        'segera' => 'SEGERA BERAKHIR',
+                        'coming' => 'AKAN DATANG',
+                    ])
+                    ->query(function (Builder $query, array $data) {
+                        if (!$data['value']) return $query;
+                        
+                        $now = now()->startOfDay()->toDateString();
+                        $nearEnd = now()->startOfDay()->addDays(30)->toDateString();
+                        
+                        return match ($data['value']) {
+                            'aktif' => $query->where('tgl_awal', '<=', $now)->where('tgl_akhir', '>=', $now),
+                            'expired' => $query->where('tgl_akhir', '<', $now),
+                            'segera' => $query->where('tgl_akhir', '>=', $now)->where('tgl_akhir', '<=', $nearEnd),
+                            'coming' => $query->where('tgl_awal', '>', $now),
+                        };
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

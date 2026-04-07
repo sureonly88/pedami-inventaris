@@ -177,7 +177,6 @@ class AssetResource extends Resource
                     ->options([
                         'kantor' => 'Perabotan Kantor',
                         'komputer' => 'Peralatan Komputer',
-                        'kendaraan' => 'Kendaraan',
                     ])
             ])
             ->headerActions([
@@ -186,30 +185,10 @@ class AssetResource extends Resource
                 // redirect('/admin/assets/cetak');
                 //}),
 
-                ExportAction::make()
-                    ->label('Export Laporan Aset')
-                    ->color('success')
-                    ->icon('heroicon-o-document-chart-bar')
-                    ->exports([
-                        \App\Filament\Exports\StyledExcelExport::make('Data Aset')
-                            ->withFilename('Laporan_Aset_Koperasi_Pedami_' . date('Y-m-d'))
-                            ->withColumns([
-                                \pxlrbt\FilamentExcel\Columns\Column::make('kode_asset')->heading('Kode Aset'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('nama_asset')->heading('Nama Aset'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('kelompok_asset')->heading('Kelompok'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('tgl_beli')->heading('Tgl Pembelian'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('hrg_beli')
-                                    ->heading('Harga Beli')
-                                    ->formatStateUsing(fn($state) => $state ? 'Rp ' . number_format($state, 0, ',', '.') : '-'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('ruangan.ruangan')->heading('Lokasi/Ruangan'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('penanggung_jawab.nama_karyawan')->heading('Penanggung Jawab'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('karyawan.nama_karyawan')->heading('Pemakai'),
-                                \pxlrbt\FilamentExcel\Columns\Column::make('status_barang')->heading('Kondisi Fisik'),
-                            ])
-                    ]),
+
 
                 Tables\Actions\Action::make('pdf')
-                    ->label('Download')
+                    ->label('Cetak Barcode')
                     ->accessSelectedRecords()
                     ->action(function (Collection $selectedRecords) {
 
@@ -222,13 +201,6 @@ class AssetResource extends Resource
                                 Blade::render('filament.modals.barcode-pdf', ['records' => $Assets])
                             )->stream();
                         }, 'Barcode.pdf');
-                        // return response()->streamDownload(function () use ($selectedRecords) {
-            
-
-                        //     echo Pdf::loadHtml(
-                        //         Blade::render('filament.modals.barcode-pdf', ['record' => $record])
-                        //     )->stream();
-                        // }, 'Barcode-' . $record->kode_asset . '.pdf');
                     }),
                 // Tables\Actions\ExportAction::make('Export')
                 //     ->exporter(AssetExporter::class)

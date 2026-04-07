@@ -330,24 +330,6 @@ class DataR2r4Resource extends Resource
                     ])
             ])
             ->headerActions([
-
-                ExportAction::make(),
-
-                Tables\Actions\Action::make('pdf')
-                    ->label('Download')
-                    ->accessSelectedRecords()
-                    ->action(function (Collection $selectedRecords) {
-
-                        $Assets = $selectedRecords->map(function (data_r2r4 $record) {
-                            return $record;
-                        });
-
-                        return response()->streamDownload(function () use ($Assets) {
-                            echo Pdf::loadHtml(
-                                Blade::render('filament.modals.barcode-r2r4', ['records' => $Assets])
-                            )->stream();
-                        }, 'Barcode.pdf');
-                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
