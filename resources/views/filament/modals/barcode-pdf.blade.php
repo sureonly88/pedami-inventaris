@@ -124,7 +124,7 @@
                         </td>
                         <td class="qr-td">
                             <div class="qr-wrapper">
-                                {!! DNS2D::getBarcodeHTML("http://92.242.187.223/info-asset/".$records[$i]->id, 'QRCODE', 2.8, 2.8) !!}
+                                {!! DNS2D::getBarcodeHTML("https://pedami-inventaris.com/info-asset/".$records[$i]->id, 'QRCODE', 2.8, 2.8) !!}
                             </div>
                         </td>
                     </tr>
