@@ -31,6 +31,7 @@
                 <th>Judul Kontrak</th>
                 <th>Tgl Awal</th>
                 <th>Tgl Akhir</th>
+                <th>Masa Sewa</th>
                 <th>Unit Kendaraan</th>
             </tr>
         </thead>
@@ -42,6 +43,13 @@
                 <td>{{ $row->judul }}</td>
                 <td class="text-center">{{ $row->tgl_awal ? date('d/m/Y', strtotime($row->tgl_awal)) : '-' }}</td>
                 <td class="text-center">{{ $row->tgl_akhir ? date('d/m/Y', strtotime($row->tgl_akhir)) : '-' }}</td>
+                <td class="text-center">
+                    @if($row->tgl_awal && $row->tgl_akhir)
+                        {{ (int) \Carbon\Carbon::parse($row->tgl_awal)->diffInMonths(\Carbon\Carbon::parse($row->tgl_akhir)) }} Bulan
+                    @else
+                        -
+                    @endif
+                </td>
                 <td>
                     @foreach($row->kontrakDetails as $detail)
                         {{ $detail->dataR2r4?->plat }}@if(!$loop->last), @endif

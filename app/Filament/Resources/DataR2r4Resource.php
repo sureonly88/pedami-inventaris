@@ -171,6 +171,22 @@ class DataR2r4Resource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('departemen')
                     ->maxLength(255),
+                Forms\Components\DatePicker::make('tgl_stop_tagihan')
+                    ->label('Tanggal Stop Tagihan')
+                    ->helperText('Isi jika tagihan kendaraan dihentikan sebelum kontrak berakhir, misalnya karena pensiun.')
+                    ->native(false)
+                    ->visible(fn ($get) => $get('stat') === 'Sewa - Kontrak Berjalan'),
+                Forms\Components\Select::make('alasan_stop_tagihan')
+                    ->label('Alasan Stop Tagihan')
+                    ->options([
+                        'Pensiun' => 'Pensiun',
+                        'Mutasi' => 'Mutasi',
+                        'Unit Ditarik' => 'Unit Ditarik',
+                        'Kontrak Dihentikan' => 'Kontrak Dihentikan',
+                        'Lainnya' => 'Lainnya',
+                    ])
+                    ->searchable()
+                    ->visible(fn ($get) => filled($get('tgl_stop_tagihan'))),
                 // Forms\Components\Select::make('stat')
                 //     ->options([
                 //         'Habis Kontrak' => 'Habis Kontrak',
@@ -301,11 +317,14 @@ class DataR2r4Resource extends Resource
                     ? '<span class="fi-badge fi-color-success">AKTIF</span>'
                     : '<span class="fi-badge fi-color-gray">EXPIRED</span>';
 
+                $masa_sewa = \Carbon\Carbon::parse($k->tgl_awal)->diffInMonths(\Carbon\Carbon::parse($k->tgl_akhir));
+
                 return sprintf(
-                    '%s <b>%s</b> <span class="text-xs text-gray-500">(%s)</span>',
+                    '%s <b>%s</b> <span class="text-xs text-gray-500">(%s) [<b>%d Bln</b>]</span>',
                     $badge,
                     e($k->no_kontrak),
-                    Carbon::parse($k->tgl_akhir)->format('d-m-Y')
+                    Carbon::parse($k->tgl_akhir)->format('d-m-Y'),
+                    (int) $masa_sewa
                 );
             })
             ->implode('<br>');
@@ -314,6 +333,13 @@ class DataR2r4Resource extends Resource
     }),
                 //Tables\Columns\TextColumn::make('kontrak_detail.kontrak.tgl_akhir'),
                 Tables\Columns\TextColumn::make('stat')->label('Status')->searchable(),
+                Tables\Columns\TextColumn::make('tgl_stop_tagihan')
+                ->label('Stop Tagihan')
+                ->date('d/m/Y')
+                ->placeholder('-'),
+                Tables\Columns\TextColumn::make('alasan_stop_tagihan')
+                ->label('Alasan Stop')
+                ->placeholder('-'),
                 Tables\Columns\TextColumn::make('hrg_sewa')->label('Harga Sewa')->numeric(decimalPlaces: 0)
                 ->prefix('Rp. '),
                 Tables\Columns\TextColumn::make('hrg_beli')->label('Harga Beli')->numeric(decimalPlaces: 0)

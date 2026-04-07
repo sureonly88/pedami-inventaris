@@ -44,6 +44,7 @@ class KontrakExport implements FromCollection, WithHeadings, WithMapping, Should
             'Judul Kontrak',
             'Tgl Awal',
             'Tgl Akhir',
+            'Masa Sewa',
             'Unit Kendaraan',
         ];
     }
@@ -63,6 +64,7 @@ class KontrakExport implements FromCollection, WithHeadings, WithMapping, Should
             $row->judul,
             $row->tgl_awal ? date('d/m/Y', strtotime($row->tgl_awal)) : '',
             $row->tgl_akhir ? date('d/m/Y', strtotime($row->tgl_akhir)) : '',
+            $row->tgl_awal && $row->tgl_akhir ? (int) \Carbon\Carbon::parse($row->tgl_awal)->diffInMonths(\Carbon\Carbon::parse($row->tgl_akhir)) . ' Bulan' : '-',
             $units,
         ];
     }

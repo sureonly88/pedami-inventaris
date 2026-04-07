@@ -48,7 +48,7 @@ class KontrakResource extends Resource
                         if ($state && $tglAkhir) {
                             $start = \Carbon\Carbon::parse($state);
                             $end = \Carbon\Carbon::parse($tglAkhir);
-                            $diff = $start->diffInMonths($end);
+                            $diff = (int) $start->diffInMonths($end);
                             $set('masa_sewa', $diff);
                         }
                     }),
@@ -61,7 +61,7 @@ class KontrakResource extends Resource
                         if ($tglAwal && $state) {
                             $start = \Carbon\Carbon::parse($tglAwal);
                             $end = \Carbon\Carbon::parse($state);
-                            $diff = $start->diffInMonths($end);
+                            $diff = (int) $start->diffInMonths($end);
                             $set('masa_sewa', $diff);
                         }
                     }),
@@ -71,12 +71,13 @@ class KontrakResource extends Resource
                     ->readOnly()
                     ->dehydrated(false)
                     ->numeric()
+                    ->formatStateUsing(fn ($state) => filled($state) ? (string) round((float) $state) : null)
                     ->placeholder('Otomatis terisi...')
                     ->default(function ($record) {
                         if ($record && $record->tgl_awal && $record->tgl_akhir) {
                             $start = \Carbon\Carbon::parse($record->tgl_awal);
                             $end = \Carbon\Carbon::parse($record->tgl_akhir);
-                            return $start->diffInMonths($end);
+                            return round($start->diffInMonths($end));
                         }
                         return null;
                     }),
@@ -105,6 +106,8 @@ class KontrakResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->striped()
+            ->defaultSort('tgl_akhir', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -115,22 +118,36 @@ class KontrakResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('no_kontrak')
+                    ->label('No. Kontrak')
+                    ->badge()
+                    ->color('gray')
+                    ->copyable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('judul')
-                    ->searchable(),
+                    ->label('Judul Kontrak')
+                    ->searchable()
+                    ->wrap()
+                    ->limit(40),
                 Tables\Columns\TextColumn::make('tgl_awal')
-                    ->date()
+                    ->label('Tgl Awal')
+                    ->date('d/m/Y')
+                    ->alignCenter()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tgl_akhir')
-                    ->date()
+                    ->label('Tgl Akhir')
+                    ->date('d/m/Y')
+                    ->alignCenter()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('masa_sewa')
                     ->label('Masa Sewa')
+                    ->badge()
+                    ->color('info')
+                    ->alignCenter()
                     ->getStateUsing(function ($record) {
                         if ($record->tgl_awal && $record->tgl_akhir) {
                             $start = \Carbon\Carbon::parse($record->tgl_awal);
                             $end = \Carbon\Carbon::parse($record->tgl_akhir);
-                            return $start->diffInMonths($end) . ' Bulan';
+                            return round($start->diffInMonths($end)) . ' Bulan';
                         }
                         return '-';
                     }),
@@ -168,6 +185,8 @@ class KontrakResource extends Resource
                         default => 'gray',
                     }),
                 Tables\Columns\TextColumn::make('file')
+                    ->label('File')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
             ])
             ->filters([

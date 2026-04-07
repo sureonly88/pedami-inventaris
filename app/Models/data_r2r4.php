@@ -14,6 +14,10 @@ class data_r2r4 extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'tgl_stop_tagihan' => 'date',
+    ];
+
     public function kontrak(): BelongsTo
     {
         return $this->belongsTo(Kontrak::class);
