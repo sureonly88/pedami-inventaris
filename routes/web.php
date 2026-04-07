@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Filament\Pages\InfoAssetPublic;
+use App\Http\Controllers\InfoAssetPublicController;
 use App\Http\Controllers\PermohonanDisposalCetakController;
 use App\Exports\PenjualanDirectExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -11,7 +11,7 @@ Route::get('/', function () {
 });
 
 
-Route::get('/info-asset/{id}', InfoAssetPublic::class);
+Route::get('/info-asset/{id}', [InfoAssetPublicController::class, 'show'])->name('info-asset.public');
 
 Route::get(
     '/permohonan-disposal/{record}/cetak',
