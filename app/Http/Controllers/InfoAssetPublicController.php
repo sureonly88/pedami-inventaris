@@ -16,7 +16,7 @@ class InfoAssetPublicController extends Controller
         if (! empty($record->gambar)) {
             $urlGambar = str_starts_with($record->gambar, 'http')
                 ? $record->gambar
-                : Storage::disk('public')->url($record->gambar);
+                : Storage::disk('minio')->url($record->gambar);
         }
 
         return view('public.info-asset', [
