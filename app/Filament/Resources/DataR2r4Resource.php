@@ -174,8 +174,21 @@ class DataR2r4Resource extends Resource
                 Forms\Components\DatePicker::make('tgl_stop_tagihan')
                     ->label('Tanggal Stop Tagihan')
                     ->helperText('Isi jika tagihan kendaraan dihentikan sebelum kontrak berakhir, misalnya karena pensiun.')
+                    ->live()
+                    ->displayFormat('d F Y')
                     ->native(false)
-                    ->visible(fn ($get) => $get('stat') === 'Sewa - Kontrak Berjalan'),
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        if (filled($state)) {
+                            $set('stat', 'Sewa dihentikan');
+
+                            return;
+                        }
+
+                        if ($get('stat') === 'Sewa dihentikan') {
+                            $set('stat', 'Sewa - Kontrak Berjalan');
+                        }
+                    })
+                    ->visible(fn ($get) => in_array($get('stat'), ['Sewa - Kontrak Berjalan', 'Sewa dihentikan']) || filled($get('tgl_stop_tagihan'))),
                 Forms\Components\Select::make('alasan_stop_tagihan')
                     ->label('Alasan Stop Tagihan')
                     ->options([
@@ -204,6 +217,7 @@ class DataR2r4Resource extends Resource
                         'Habis Kontrak' => 'Habis Kontrak',
                         'Di pakai - Tidak ada Kontrak' => 'Di pakai - Tidak ada Kontrak',
                         'Sewa - Kontrak Berjalan' => 'Sewa - Kontrak Berjalan',
+                        'Sewa dihentikan' => 'Sewa dihentikan',
                         'Operasional Pedami' => 'Operasional Pedami',
                         ];
 

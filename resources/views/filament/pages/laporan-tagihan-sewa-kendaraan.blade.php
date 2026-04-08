@@ -77,5 +77,56 @@
                 </div>
             </div>
         @endforeach
+
+        @php
+            $historySections = [
+                'History Tidak Ditagihkan - Roda 2' => $this->historyRoda2Rows,
+                'History Tidak Ditagihkan - Roda 4' => $this->historyRoda4Rows,
+            ];
+        @endphp
+
+        @foreach ($historySections as $title => $rows)
+            <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm dark:border-amber-900 dark:bg-gray-900">
+                <div class="mb-4">
+                    <h3 class="text-lg font-bold text-amber-700 dark:text-amber-400">{{ $title }}</h3>
+                    <p class="text-sm text-gray-500">Unit yang tidak lagi ditagihkan pada periode {{ $this->periodLabel }}</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead>
+                            <tr class="border-b bg-amber-100 dark:bg-gray-800">
+                                <th class="px-3 py-2 text-left">No</th>
+                                <th class="px-3 py-2 text-left">No. Kontrak</th>
+                                <th class="px-3 py-2 text-left">Plat</th>
+                                <th class="px-3 py-2 text-left">Jenis/Type</th>
+                                <th class="px-3 py-2 text-left">Tanggal Stop</th>
+                                <th class="px-3 py-2 text-left">Alasan</th>
+                                <th class="px-3 py-2 text-left">Status</th>
+                                <th class="px-3 py-2 text-left">Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($rows as $row)
+                                <tr class="border-b dark:border-gray-800">
+                                    <td class="px-3 py-2">{{ $row['no'] }}</td>
+                                    <td class="px-3 py-2">{{ $row['no_kontrak'] }}</td>
+                                    <td class="px-3 py-2 font-semibold">{{ $row['plat'] }}</td>
+                                    <td class="px-3 py-2">{{ $row['jenis_type'] }}</td>
+                                    <td class="px-3 py-2">{{ $row['tgl_stop_tagihan'] ? \Carbon\Carbon::parse($row['tgl_stop_tagihan'])->translatedFormat('d F Y') : '-' }}</td>
+                                    <td class="px-3 py-2">{{ $row['alasan_stop_tagihan'] ?: '-' }}</td>
+                                    <td class="px-3 py-2">{{ $row['status'] }}</td>
+                                    <td class="px-3 py-2">{{ $row['keterangan'] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="px-3 py-6 text-center text-gray-500">Tidak ada data history.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @endforeach
     </div>
 </x-filament-panels::page>

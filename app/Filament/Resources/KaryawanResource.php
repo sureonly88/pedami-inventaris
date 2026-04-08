@@ -38,6 +38,44 @@ class KaryawanResource extends Resource
                 Forms\Components\TextInput::make('nama_karyawan')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('no_ktp')
+                    ->label('No KTP')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('no_hp')
+                    ->label('No HP')
+                    ->tel()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('no_rekening')
+                    ->label('No Rekening')
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('alamat')
+                    ->label('Alamat')
+                    ->rows(3)
+                    ->columnSpanFull(),
+                Forms\Components\DatePicker::make('tanggal_lahir')
+                    ->label('Tanggal Lahir')
+                    ->native(false),
+                Forms\Components\DatePicker::make('tanggal_masuk_kerja')
+                    ->label('Tanggal Masuk Kerja')
+                    ->native(false),
+                Forms\Components\TextInput::make('tempat_lahir')
+                    ->label('Tempat Lahir')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('nama_bank')
+                    ->label('Nama Bank')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('kontak_darurat')
+                    ->label('Kontak Darurat')
+                    ->maxLength(255),
+                Forms\Components\Select::make('status_karyawan')
+                    ->label('Status Karyawan')
+                    ->options([
+                        'Aktif' => 'Aktif',
+                        'Pensiun' => 'Pensiun',
+                        'Nonaktif' => 'Nonaktif',
+                    ])
+                    ->default('Aktif')
+                    ->required(),
                 Forms\Components\Select::make('jabatan')
                     ->options([
                         'Ketua' => 'Ketua',
@@ -53,6 +91,7 @@ class KaryawanResource extends Resource
                 Forms\Components\Select::make('divisi_id')
                     ->label('Divisi')
                     ->options(Divisi::pluck('nama_divisi', 'id'))
+                    ->dehydrated(false)
                     ->reactive()
                     ->afterStateUpdated(fn (callable $set) => $set('subdivisi_id', null)),
 
@@ -86,16 +125,37 @@ class KaryawanResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nik'),
                 Tables\Columns\TextColumn::make('nama_karyawan')->searchable(),
+                Tables\Columns\TextColumn::make('no_ktp')->label('No KTP')->searchable(),
+                Tables\Columns\TextColumn::make('no_hp')->label('No HP')->searchable(),
+                Tables\Columns\TextColumn::make('no_rekening')->label('No Rekening')->searchable(),
+                Tables\Columns\TextColumn::make('nama_bank')->label('Nama Bank')->searchable(),
+                Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir')->searchable(),
+                Tables\Columns\TextColumn::make('tanggal_lahir')->label('Tgl Lahir')->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('tanggal_masuk_kerja')->label('Tgl Masuk')->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('kontak_darurat')->label('Kontak Darurat')->searchable(),
+                Tables\Columns\TextColumn::make('status_karyawan')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Aktif' => 'success',
+                        'Pensiun' => 'danger',
+                        'Nonaktif' => 'gray',
+                        default => 'primary',
+                    })
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('jabatan'),
                 Tables\Columns\TextColumn::make('subdivisi.divisi.nama_divisi'),
                 Tables\Columns\TextColumn::make('subdivisi.nama_sub'),
                 Tables\Columns\TextColumn::make('jkel'),
             ])
             ->filters([
-                //Tables\Filters\SelectFilter::make('divisi_id')
-                //->relationship('divisi', 'nama_divisi')
-                // Tables\Filters\SelectFilter::make('divisi_id')
-                // ->relationship('divisi', 'subdivisi')
+                Tables\Filters\SelectFilter::make('status_karyawan')
+                    ->label('Status')
+                    ->options([
+                        'Aktif' => 'Aktif',
+                        'Pensiun' => 'Pensiun',
+                        'Nonaktif' => 'Nonaktif',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -111,7 +171,8 @@ class KaryawanResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\MutasiKaryawansRelationManager::class,
+            RelationManagers\PensiunKaryawansRelationManager::class,
         ];
     }
 

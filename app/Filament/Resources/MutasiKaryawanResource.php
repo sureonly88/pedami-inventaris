@@ -47,6 +47,15 @@ class MutasiKaryawanResource extends Resource
                             })
                             ->required()
                             ->live()
+                            ->afterStateHydrated(function (callable $set, $state) {
+                                $karyawan = Karyawan::with('subdivisi.divisi')->find($state);
+
+                                if ($karyawan) {
+                                    $set('jabatan_asal', $karyawan->jabatan);
+                                    $set('divisi_asal_id', $karyawan->subdivisi?->divisi?->id);
+                                    $set('subdivisi_asal_id', $karyawan->subdivisi_id);
+                                }
+                            })
                             ->afterStateUpdated(function (callable $set, $state) {
                                 $karyawan = Karyawan::with('subdivisi.divisi')->find($state);
                                 if ($karyawan) {

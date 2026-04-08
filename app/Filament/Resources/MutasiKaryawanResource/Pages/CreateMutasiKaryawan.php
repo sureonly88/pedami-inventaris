@@ -21,6 +21,7 @@ class CreateMutasiKaryawan extends CreateRecord
             $karyawan->update([
                 'jabatan' => $mutation->jabatan_tujuan,
                 'subdivisi_id' => $mutation->subdivisi_tujuan_id,
+                'status_karyawan' => 'Aktif',
             ]);
         }
     }

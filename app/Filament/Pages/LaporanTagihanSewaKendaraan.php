@@ -37,6 +37,10 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
 
     public array $roda4Rows = [];
 
+    public array $historyRoda2Rows = [];
+
+    public array $historyRoda4Rows = [];
+
     public array $summary = [
         'roda2' => ['unit' => 0, 'nominal' => 0],
         'roda4' => ['unit' => 0, 'nominal' => 0],
@@ -92,6 +96,8 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
 
         $this->roda2Rows = $report['roda2'];
         $this->roda4Rows = $report['roda4'];
+        $this->historyRoda2Rows = $report['historyRoda2'];
+        $this->historyRoda4Rows = $report['historyRoda4'];
         $this->summary = $report['summary'];
         $this->periodLabel = $report['periodLabel'];
     }
@@ -129,17 +135,14 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
         $periodLabel = $startDate->translatedFormat('F Y');
 
         $vehicles = data_r2r4::query()
-            ->where('stat', 'Sewa - Kontrak Berjalan')
+            ->whereIn('stat', ['Sewa - Kontrak Berjalan', 'Sewa dihentikan'])
             ->with(['kontrak_detail.kontrak'])
             ->get();
 
         $rows = collect();
+        $historyRows = collect();
 
         foreach ($vehicles as $vehicle) {
-            if ($vehicle->tgl_stop_tagihan && Carbon::parse($vehicle->tgl_stop_tagihan)->startOfDay()->lte($startDate)) {
-                continue;
-            }
-
             $activeDetail = $vehicle->kontrak_detail
                 ->filter(fn ($detail) => $detail->kontrak)
                 ->first(function ($detail) use ($startDate, $endDate) {
@@ -155,6 +158,30 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
 
             $kontrak = $activeDetail->kontrak;
             $type = str_contains(strtoupper((string) $vehicle->jns_brg), 'R4') ? 'R4' : 'R2';
+
+            if ($vehicle->tgl_stop_tagihan && Carbon::parse($vehicle->tgl_stop_tagihan)->startOfDay()->lte($startDate)) {
+                $historyRows->push([
+                    'type' => $type,
+                    'no_kontrak' => $kontrak->no_kontrak,
+                    'plat' => $vehicle->plat,
+                    'jenis_type' => $vehicle->nm_brg,
+                    'tahun' => $vehicle->thn,
+                    'nomor_mesin' => $vehicle->no_mesin,
+                    'nomor_rangka' => $vehicle->no_rangka,
+                    'awal' => $kontrak->tgl_awal,
+                    'akhir' => $kontrak->tgl_akhir,
+                    'uraian' => $kontrak->judul ?: ('Sewa kendaraan ' . strtolower($vehicle->jns_brg ?? '')),
+                    'harga_kontrak' => (int) ($vehicle->hrg_sewa ?? 0),
+                    'penanggung_jawab' => $vehicle->pemegang,
+                    'departemen' => $vehicle->departemen,
+                    'tgl_stop_tagihan' => $vehicle->tgl_stop_tagihan,
+                    'alasan_stop_tagihan' => $vehicle->alasan_stop_tagihan,
+                    'status' => $vehicle->stat,
+                    'keterangan' => 'Tidak ditagihkan pada periode ' . $periodLabel,
+                ]);
+
+                continue;
+            }
 
             $rows->push([
                 'type' => $type,
@@ -214,9 +241,44 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
             ->values()
             ->all();
 
+        $historyNormalized = $historyRows->values()->map(function (array $row, int $index) {
+            return [
+                'type' => $row['type'],
+                'no' => $index + 1,
+                'no_kontrak' => $row['no_kontrak'],
+                'plat' => $row['plat'],
+                'jenis_type' => $row['jenis_type'],
+                'tahun' => $row['tahun'],
+                'nomor_mesin' => $row['nomor_mesin'],
+                'nomor_rangka' => $row['nomor_rangka'],
+                'awal' => $row['awal'],
+                'akhir' => $row['akhir'],
+                'uraian' => $row['uraian'],
+                'harga_kontrak' => $row['harga_kontrak'],
+                'penanggung_jawab' => $row['penanggung_jawab'],
+                'departemen' => $row['departemen'],
+                'tgl_stop_tagihan' => $row['tgl_stop_tagihan'],
+                'alasan_stop_tagihan' => $row['alasan_stop_tagihan'],
+                'status' => $row['status'],
+                'keterangan' => $row['keterangan'],
+            ];
+        });
+
+        $historyRoda2 = $historyNormalized
+            ->filter(fn (array $row) => $row['type'] === 'R2')
+            ->values()
+            ->all();
+
+        $historyRoda4 = $historyNormalized
+            ->filter(fn (array $row) => $row['type'] === 'R4')
+            ->values()
+            ->all();
+
         return [
             'roda2' => $this->reindexRows($roda2),
             'roda4' => $this->reindexRows($roda4),
+            'historyRoda2' => $this->reindexRows($historyRoda2),
+            'historyRoda4' => $this->reindexRows($historyRoda4),
             'summary' => [
                 'roda2' => [
                     'unit' => count($roda2),

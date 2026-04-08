@@ -47,6 +47,15 @@ class PensiunKaryawanResource extends Resource
                             })
                             ->required()
                             ->live()
+                            ->afterStateHydrated(function (callable $set, $state) {
+                                $karyawan = Karyawan::with('subdivisi.divisi')->find($state);
+
+                                if ($karyawan) {
+                                    $set('jabatan_terakhir', $karyawan->jabatan);
+                                    $set('divisi_terakhir_id', $karyawan->subdivisi?->divisi?->id);
+                                    $set('subdivisi_terakhir_id', $karyawan->subdivisi_id);
+                                }
+                            })
                             ->afterStateUpdated(function (callable $set, $state) {
                                 $karyawan = Karyawan::with('subdivisi.divisi')->find($state);
                                 if ($karyawan) {
