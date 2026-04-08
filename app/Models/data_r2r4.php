@@ -13,9 +13,12 @@ use Illuminate\Database\Eloquent\Builder;
 class data_r2r4 extends Model
 {
     use HasFactory;
+    protected $table = 'data_r2r4s';
+    protected $guarded = [];
 
     protected $casts = [
         'tgl_stop_tagihan' => 'date',
+        'alasan_stop_tagihan' => 'string',
     ];
 
     public function kontrak(): BelongsTo
