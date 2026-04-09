@@ -9,6 +9,8 @@ class KaryawanGenderPerDivisiChart extends ChartWidget
 {
     protected static ?string $heading = 'Komposisi Jenis Kelamin per Divisi';
 
+    protected static ?int $sort = 4;
+
     protected int | string | array $columnSpan = 'full';
 
     protected function getData(): array

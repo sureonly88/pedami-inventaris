@@ -9,6 +9,8 @@ class KaryawanStatusChart extends ChartWidget
 {
     protected static ?string $heading = 'Distribusi Status Karyawan';
 
+    protected static ?int $sort = 5;
+
     protected int | string | array $columnSpan = 1;
 
     protected function getData(): array

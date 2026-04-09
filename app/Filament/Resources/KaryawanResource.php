@@ -61,6 +61,12 @@ class KaryawanResource extends Resource
                 Forms\Components\TextInput::make('no_rekening')
                     ->label('No Rekening')
                     ->maxLength(255),
+                Forms\Components\TextInput::make('no_bpjs_ketenagakerjaan')
+                    ->label('No BPJS Ketenagakerjaan')
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('no_bpjs_kesehatan')
+                    ->label('No BPJS Kesehatan')
+                    ->maxLength(255),
                 Forms\Components\Textarea::make('alamat')
                     ->label('Alamat')
                     ->rows(3)
@@ -149,6 +155,8 @@ class KaryawanResource extends Resource
                 Tables\Columns\TextColumn::make('no_ktp')->label('No KTP')->searchable(),
                 Tables\Columns\TextColumn::make('no_hp')->label('No HP')->searchable(),
                 Tables\Columns\TextColumn::make('no_rekening')->label('No Rekening')->searchable(),
+                Tables\Columns\TextColumn::make('no_bpjs_ketenagakerjaan')->label('BPJS Ketenagakerjaan')->searchable(),
+                Tables\Columns\TextColumn::make('no_bpjs_kesehatan')->label('BPJS Kesehatan')->searchable(),
                 Tables\Columns\TextColumn::make('nama_bank')->label('Nama Bank')->searchable(),
                 Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir')->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_lahir')->label('Tgl Lahir')->date('d/m/Y'),

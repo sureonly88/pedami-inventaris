@@ -26,6 +26,10 @@ class KaryawanImporter extends Importer
                 ->rules(['nullable', 'max:255']),
             ImportColumn::make('no_rekening')
                 ->rules(['nullable', 'max:255']),
+            ImportColumn::make('no_bpjs_ketenagakerjaan')
+                ->rules(['nullable', 'max:255']),
+            ImportColumn::make('no_bpjs_kesehatan')
+                ->rules(['nullable', 'max:255']),
             ImportColumn::make('alamat'),
             ImportColumn::make('tempat_lahir')
                 ->rules(['nullable', 'max:255']),

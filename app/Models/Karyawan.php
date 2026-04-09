@@ -30,6 +30,8 @@ class Karyawan extends Model
         'no_ktp',
         'no_hp',
         'no_rekening',
+        'no_bpjs_ketenagakerjaan',
+        'no_bpjs_kesehatan',
         'alamat',
         'tanggal_lahir',
         'tanggal_masuk_kerja',
