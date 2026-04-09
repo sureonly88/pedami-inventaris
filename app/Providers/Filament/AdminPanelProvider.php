@@ -375,6 +375,7 @@ BLADE);
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
+                \App\Filament\Widgets\LegendWidget::class,
                 //Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
