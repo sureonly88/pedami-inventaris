@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 use App\Models\Subdivisi;
 use App\Models\Divisi;
 use Filament\Forms\Get;
@@ -27,10 +28,22 @@ class KaryawanResource extends Resource
     protected static ?string $navigationLabel = 'Karyawan';
 
     protected static ?string $navigationGroup = 'Master Data';
+
+    protected static function formatMasaKerja(?string $tanggalMasukKerja): ?string
+    {
+        if (blank($tanggalMasukKerja)) {
+            return null;
+        }
+
+        $selisih = Carbon::parse($tanggalMasukKerja)->diff(now());
+
+        return sprintf('%d tahun %d bulan %d hari', $selisih->y, $selisih->m, $selisih->d);
+    }
     
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(2)
             ->schema([
                 Forms\Components\TextInput::make('nik')
                     ->required()
@@ -52,15 +65,23 @@ class KaryawanResource extends Resource
                     ->label('Alamat')
                     ->rows(3)
                     ->columnSpanFull(),
+                Forms\Components\TextInput::make('tempat_lahir')
+                    ->label('Tempat Lahir')
+                    ->maxLength(255),
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
                     ->native(false),
                 Forms\Components\DatePicker::make('tanggal_masuk_kerja')
                     ->label('Tanggal Masuk Kerja')
-                    ->native(false),
-                Forms\Components\TextInput::make('tempat_lahir')
-                    ->label('Tempat Lahir')
-                    ->maxLength(255),
+                    ->native(false)
+                    ->live()
+                    ->afterStateHydrated(fn (callable $set, $state) => $set('masa_kerja', static::formatMasaKerja($state)))
+                    ->afterStateUpdated(fn (callable $set, $state) => $set('masa_kerja', static::formatMasaKerja($state))),
+                Forms\Components\TextInput::make('masa_kerja')
+                    ->label('Masa Kerja')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Otomatis dihitung dari tanggal masuk kerja'),
                 Forms\Components\TextInput::make('nama_bank')
                     ->label('Nama Bank')
                     ->maxLength(255),
@@ -132,6 +153,7 @@ class KaryawanResource extends Resource
                 Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir')->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_lahir')->label('Tgl Lahir')->date('d/m/Y'),
                 Tables\Columns\TextColumn::make('tanggal_masuk_kerja')->label('Tgl Masuk')->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('masa_kerja')->label('Masa Kerja'),
                 Tables\Columns\TextColumn::make('kontak_darurat')->label('Kontak Darurat')->searchable(),
                 Tables\Columns\TextColumn::make('status_karyawan')
                     ->label('Status')

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MutasiKaryawan;
@@ -13,6 +14,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Karyawan extends Model
 {
     use HasFactory;
+
+    protected $appends = [
+        'masa_kerja',
+    ];
+
+    protected $casts = [
+        'tanggal_lahir' => 'date',
+        'tanggal_masuk_kerja' => 'date',
+    ];
 
     protected $fillable = [
         'nik',
@@ -31,6 +41,21 @@ class Karyawan extends Model
         'subdivisi_id',
         'jkel',
     ];
+
+    public function getMasaKerjaAttribute(): ?string
+    {
+        if (! $this->tanggal_masuk_kerja) {
+            return null;
+        }
+
+        $tanggalMasuk = $this->tanggal_masuk_kerja instanceof Carbon
+            ? $this->tanggal_masuk_kerja
+            : Carbon::parse($this->tanggal_masuk_kerja);
+
+        $selisih = $tanggalMasuk->diff(now());
+
+        return sprintf('%d tahun %d bulan %d hari', $selisih->y, $selisih->m, $selisih->d);
+    }
 
     public function subdivisi(): BelongsTo
     {
