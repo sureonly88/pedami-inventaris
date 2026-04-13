@@ -103,9 +103,26 @@ class KaryawanResource extends Resource
                     ->disabled()
                     ->dehydrated(false)
                     ->placeholder('Otomatis dihitung dari tanggal masuk kerja'),
-                Forms\Components\TextInput::make('nama_bank')
+                Forms\Components\Select::make('nama_bank')
                     ->label('Nama Bank')
-                    ->maxLength(255),
+                    ->options([
+                        'BCA' => 'BCA',
+                        'BRI' => 'BRI',
+                        'BNI' => 'BNI',
+                        'Mandiri' => 'Mandiri',
+                        'BTN' => 'BTN',
+                        'BSI' => 'BSI',
+                        'CIMB Niaga' => 'CIMB Niaga',
+                        'Bank Danamon' => 'Bank Danamon',
+                        'Permata Bank' => 'Permata Bank',
+                        'Bank Mega' => 'Bank Mega',
+                        'Bank Panin' => 'Bank Panin',
+                        'OCBC NISP' => 'OCBC NISP',
+                        'Bank Muamalat' => 'Bank Muamalat',
+                        'Bank Syariah Bukopin' => 'Bank Syariah Bukopin',
+                        'Bank Kaltimtara' => 'Bank Kaltimtara',
+                    ])
+                    ->searchable(),
                 Forms\Components\TextInput::make('kontak_darurat')
                     ->label('Kontak Darurat')
                     ->maxLength(255),
