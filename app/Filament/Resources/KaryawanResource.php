@@ -67,9 +67,21 @@ class KaryawanResource extends Resource
                 Forms\Components\TextInput::make('no_bpjs_kesehatan')
                     ->label('No BPJS Kesehatan')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('pendidikan_terakhir')
+                Forms\Components\Select::make('pendidikan_terakhir')
                     ->label('Pendidikan Terakhir')
-                    ->maxLength(255),
+                    ->options([
+                        'SD' => 'SD',
+                        'SMP' => 'SMP',
+                        'SMA/SMK/MA' => 'SMA/SMK/MA',
+                        'D1' => 'D1',
+                        'D2' => 'D2',
+                        'D3' => 'D3',
+                        'D4' => 'D4',
+                        'S1' => 'S1',
+                        'S2' => 'S2',
+                        'S3' => 'S3',
+                    ])
+                    ->searchable(),
                 Forms\Components\Textarea::make('alamat')
                     ->label('Alamat')
                     ->rows(3)
