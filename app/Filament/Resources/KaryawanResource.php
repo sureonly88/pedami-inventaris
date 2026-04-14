@@ -124,6 +124,17 @@ class KaryawanResource extends Resource
                     ->disabled()
                     ->dehydrated(false)
                     ->placeholder('Otomatis dihitung dari tanggal masuk kerja'),
+                Forms\Components\Select::make('agama')
+                    ->label('Agama')
+                    ->options([
+                        'Islam' => 'Islam',
+                        'Kristen' => 'Kristen',
+                        'Katolik' => 'Katolik',
+                        'Hindu' => 'Hindu',
+                        'Buddha' => 'Buddha',
+                        'Konghucu' => 'Konghucu',
+                    ])
+                    ->searchable(),
                 Forms\Components\Select::make('nama_bank')
                     ->label('Nama Bank')
                     ->options([
@@ -213,6 +224,7 @@ class KaryawanResource extends Resource
                 Tables\Columns\TextColumn::make('pendidikan_terakhir')->label('Pendidikan Terakhir')->searchable(),
                 Tables\Columns\TextColumn::make('nama_bank')->label('Nama Bank')->searchable(),
                 Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir')->searchable(),
+                Tables\Columns\TextColumn::make('agama')->label('Agama')->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_lahir')
                     ->label('Tgl Lahir')
                     ->formatStateUsing(fn ($state) => filled($state) ? Carbon::parse($state)->locale('id')->translatedFormat('d F Y') : null),

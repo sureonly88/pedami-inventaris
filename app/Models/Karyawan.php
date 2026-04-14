@@ -38,6 +38,7 @@ class Karyawan extends Model
         'tanggal_lahir',
         'tanggal_masuk_kerja',
         'tempat_lahir',
+        'agama',
         'nama_bank',
         'kontak_darurat',
         'status_karyawan',
