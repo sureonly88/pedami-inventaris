@@ -103,6 +103,7 @@ class KaryawanResource extends Resource
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
                     ->native(false)
+                    ->displayFormat('d F Y')
                     ->live()
                     ->afterStateHydrated(fn (callable $set, $state) => $set('umur', static::formatUmur($state)))
                     ->afterStateUpdated(fn (callable $set, $state) => $set('umur', static::formatUmur($state))),
@@ -114,6 +115,7 @@ class KaryawanResource extends Resource
                 Forms\Components\DatePicker::make('tanggal_masuk_kerja')
                     ->label('Tanggal Masuk Kerja')
                     ->native(false)
+                    ->displayFormat('d F Y')
                     ->live()
                     ->afterStateHydrated(fn (callable $set, $state) => $set('masa_kerja', static::formatMasaKerja($state)))
                     ->afterStateUpdated(fn (callable $set, $state) => $set('masa_kerja', static::formatMasaKerja($state))),
@@ -211,9 +213,13 @@ class KaryawanResource extends Resource
                 Tables\Columns\TextColumn::make('pendidikan_terakhir')->label('Pendidikan Terakhir')->searchable(),
                 Tables\Columns\TextColumn::make('nama_bank')->label('Nama Bank')->searchable(),
                 Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir')->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_lahir')->label('Tgl Lahir')->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('tanggal_lahir')
+                    ->label('Tgl Lahir')
+                    ->formatStateUsing(fn ($state) => filled($state) ? Carbon::parse($state)->locale('id')->translatedFormat('d F Y') : null),
                 Tables\Columns\TextColumn::make('umur')->label('Umur'),
-                Tables\Columns\TextColumn::make('tanggal_masuk_kerja')->label('Tgl Masuk')->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('tanggal_masuk_kerja')
+                    ->label('Tgl Masuk')
+                    ->formatStateUsing(fn ($state) => filled($state) ? Carbon::parse($state)->locale('id')->translatedFormat('d F Y') : null),
                 Tables\Columns\TextColumn::make('masa_kerja')->label('Masa Kerja'),
                 Tables\Columns\TextColumn::make('kontak_darurat')->label('Kontak Darurat')->searchable(),
                 Tables\Columns\TextColumn::make('status_karyawan')
