@@ -16,6 +16,7 @@ class Karyawan extends Model
     use HasFactory;
 
     protected $appends = [
+        'umur',
         'masa_kerja',
     ];
 
@@ -44,6 +45,21 @@ class Karyawan extends Model
         'subdivisi_id',
         'jkel',
     ];
+
+    public function getUmurAttribute(): ?string
+    {
+        if (! $this->tanggal_lahir) {
+            return null;
+        }
+
+        $tanggalLahir = $this->tanggal_lahir instanceof Carbon
+            ? $this->tanggal_lahir
+            : Carbon::parse($this->tanggal_lahir);
+
+        $selisih = $tanggalLahir->diff(now());
+
+        return sprintf('%d tahun %d bulan', $selisih->y, $selisih->m);
+    }
 
     public function getMasaKerjaAttribute(): ?string
     {

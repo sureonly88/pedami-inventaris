@@ -39,6 +39,17 @@ class KaryawanResource extends Resource
 
         return sprintf('%d tahun %d bulan %d hari', $selisih->y, $selisih->m, $selisih->d);
     }
+
+    protected static function formatUmur(?string $tanggalLahir): ?string
+    {
+        if (blank($tanggalLahir)) {
+            return null;
+        }
+
+        $selisih = Carbon::parse($tanggalLahir)->diff(now());
+
+        return sprintf('%d tahun %d bulan', $selisih->y, $selisih->m);
+    }
     
     public static function form(Form $form): Form
     {
@@ -91,7 +102,15 @@ class KaryawanResource extends Resource
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('tanggal_lahir')
                     ->label('Tanggal Lahir')
-                    ->native(false),
+                    ->native(false)
+                    ->live()
+                    ->afterStateHydrated(fn (callable $set, $state) => $set('umur', static::formatUmur($state)))
+                    ->afterStateUpdated(fn (callable $set, $state) => $set('umur', static::formatUmur($state))),
+                Forms\Components\TextInput::make('umur')
+                    ->label('Umur')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->placeholder('Otomatis dihitung dari tanggal lahir'),
                 Forms\Components\DatePicker::make('tanggal_masuk_kerja')
                     ->label('Tanggal Masuk Kerja')
                     ->native(false)
@@ -182,7 +201,7 @@ class KaryawanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nik'),
+                Tables\Columns\TextColumn::make('nik')->searchable(),
                 Tables\Columns\TextColumn::make('nama_karyawan')->searchable(),
                 Tables\Columns\TextColumn::make('no_ktp')->label('No KTP')->searchable(),
                 Tables\Columns\TextColumn::make('no_hp')->label('No HP')->searchable(),
@@ -193,6 +212,7 @@ class KaryawanResource extends Resource
                 Tables\Columns\TextColumn::make('nama_bank')->label('Nama Bank')->searchable(),
                 Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir')->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_lahir')->label('Tgl Lahir')->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('umur')->label('Umur'),
                 Tables\Columns\TextColumn::make('tanggal_masuk_kerja')->label('Tgl Masuk')->date('d/m/Y'),
                 Tables\Columns\TextColumn::make('masa_kerja')->label('Masa Kerja'),
                 Tables\Columns\TextColumn::make('kontak_darurat')->label('Kontak Darurat')->searchable(),
