@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Karyawan;
+use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
@@ -17,63 +18,117 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class KaryawanExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithEvents
 {
+    protected int $rowNumber = 0;
+
+    protected array $selectedFields;
+
+    public function __construct(
+        protected ?Builder $query = null,
+        protected ?string $title = null,
+        protected ?string $subtitle = null,
+        ?array $selectedFields = null,
+    ) {
+        $availableFields = array_keys(static::getFieldOptions());
+
+        $this->selectedFields = collect($selectedFields ?: $availableFields)
+            ->filter(fn (string $field) => in_array($field, $availableFields, true))
+            ->values()
+            ->all();
+    }
+
+    public static function getFieldOptions(): array
+    {
+        return [
+            'nik' => 'NIK',
+            'nama_karyawan' => 'Nama Karyawan',
+            'no_ktp' => 'No KTP',
+            'no_hp' => 'No HP',
+            'no_rekening' => 'No Rekening',
+            'no_bpjs_ketenagakerjaan' => 'No BPJS Ketenagakerjaan',
+            'no_bpjs_kesehatan' => 'No BPJS Kesehatan',
+            'pendidikan_terakhir' => 'Pendidikan Terakhir',
+            'alamat' => 'Alamat',
+            'agama' => 'Agama',
+            'tempat_lahir' => 'Tempat Lahir',
+            'tanggal_lahir' => 'Tanggal Lahir',
+            'umur' => 'Umur',
+            'tanggal_masuk_kerja' => 'Tanggal Masuk Kerja',
+            'masa_kerja' => 'Masa Kerja',
+            'nama_bank' => 'Nama Bank',
+            'kontak_darurat' => 'Kontak Darurat',
+            'status_karyawan' => 'Status Karyawan',
+            'jabatan' => 'Jabatan',
+            'subdivisi' => 'Subdivisi',
+            'divisi' => 'Divisi',
+            'jkel' => 'Jenis Kelamin',
+        ];
+    }
+
     public function collection()
     {
-        return Karyawan::with(['subdivisi.divisi'])
+        $this->rowNumber = 0;
+
+        return ($this->query ?? Karyawan::query())
+            ->with(['subdivisi.divisi'])
             ->orderBy('nama_karyawan')
             ->get();
     }
 
     public function headings(): array
     {
-        return [
-            'NIK',
-            'Nama Karyawan',
-            'No KTP',
-            'No HP',
-            'No Rekening',
-            'No BPJS Ketenagakerjaan',
-            'No BPJS Kesehatan',
-            'Pendidikan Terakhir',
-            'Alamat',
-            'Tempat Lahir',
-            'Tanggal Lahir',
-            'Tanggal Masuk Kerja',
-            'Nama Bank',
-            'Kontak Darurat',
-            'Status Karyawan',
-            'Jabatan',
-            'Subdivisi ID',
-            'Subdivisi',
-            'Divisi',
-            'Jenis Kelamin',
-        ];
+        return array_merge(
+            ['No'],
+            array_values(array_intersect_key(static::getFieldOptions(), array_flip($this->selectedFields)))
+        );
     }
 
     public function map($row): array
     {
-        return [
-            $row->nik,
-            $row->nama_karyawan,
-            $row->no_ktp,
-            $row->no_hp,
-            $row->no_rekening,
-            $row->no_bpjs_ketenagakerjaan,
-            $row->no_bpjs_kesehatan,
-            $row->pendidikan_terakhir,
-            $row->alamat,
-            $row->tempat_lahir,
-            optional($row->tanggal_lahir)->format('Y-m-d'),
-            optional($row->tanggal_masuk_kerja)->format('Y-m-d'),
-            $row->nama_bank,
-            $row->kontak_darurat,
-            $row->status_karyawan,
-            $row->jabatan,
-            $row->subdivisi_id,
-            $row->subdivisi?->nama_sub,
-            $row->subdivisi?->divisi?->nama_divisi,
-            $row->jkel,
+        $availableValues = [
+            'nik' => $row->nik,
+            'nama_karyawan' => $row->nama_karyawan,
+            'no_ktp' => $row->no_ktp,
+            'no_hp' => $row->no_hp,
+            'no_rekening' => $row->no_rekening,
+            'no_bpjs_ketenagakerjaan' => $row->no_bpjs_ketenagakerjaan,
+            'no_bpjs_kesehatan' => $row->no_bpjs_kesehatan,
+            'pendidikan_terakhir' => $row->pendidikan_terakhir,
+            'alamat' => $row->alamat,
+            'agama' => $row->agama,
+            'tempat_lahir' => $row->tempat_lahir,
+            'tanggal_lahir' => optional($row->tanggal_lahir)->translatedFormat('d F Y'),
+            'umur' => $row->umur,
+            'tanggal_masuk_kerja' => optional($row->tanggal_masuk_kerja)->translatedFormat('d F Y'),
+            'masa_kerja' => $row->masa_kerja,
+            'nama_bank' => $row->nama_bank,
+            'kontak_darurat' => $row->kontak_darurat,
+            'status_karyawan' => $row->status_karyawan,
+            'jabatan' => $this->normalizeJabatan($row->jabatan),
+            'subdivisi' => $row->subdivisi?->nama_sub,
+            'divisi' => $row->subdivisi?->divisi?->nama_divisi,
+            'jkel' => $this->normalizeGender($row->jkel),
         ];
+
+        return array_merge(
+            [++$this->rowNumber],
+            collect($this->selectedFields)->map(fn (string $field) => $availableValues[$field] ?? null)->all()
+        );
+    }
+
+    protected function normalizeJabatan(?string $jabatan): ?string
+    {
+        return match ($jabatan) {
+            'Staff' => 'Staf',
+            default => $jabatan,
+        };
+    }
+
+    protected function normalizeGender(?string $gender): ?string
+    {
+        return match ($gender) {
+            'Laki-Laki' => 'Laki - Laki',
+            default => $gender,
+        };
     }
 
     public function styles(Worksheet $sheet)
@@ -89,12 +144,11 @@ class KaryawanExport implements FromCollection, WithHeadings, WithMapping, Shoul
             AfterSheet::class => function (AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
                 $highestColumn = $sheet->getHighestColumn();
-                $highestRow = $sheet->getHighestRow();
 
                 $sheet->insertNewRowBefore(1, 4);
-                $sheet->setCellValue('A1', 'DATA KARYAWAN');
+                $sheet->setCellValue('A1', $this->title ?: 'DATA KARYAWAN');
                 $sheet->setCellValue('A2', 'KOPERASI KONSUMEN PEDAMI');
-                $sheet->setCellValue('A3', 'Tanggal Export: ' . now()->format('d/m/Y H:i'));
+                $sheet->setCellValue('A3', $this->subtitle ?: 'Tanggal Export: ' . now()->format('d/m/Y H:i'));
 
                 $sheet->mergeCells('A1:' . $highestColumn . '1');
                 $sheet->mergeCells('A2:' . $highestColumn . '2');
@@ -120,14 +174,47 @@ class KaryawanExport implements FromCollection, WithHeadings, WithMapping, Shoul
                     ],
                 ]);
 
-                $sheet->getStyle('A5:' . $highestColumn . ($highestRow + 4))->applyFromArray([
+                $highestRow = $sheet->getHighestRow();
+
+                $sheet->getStyle('A5:' . $highestColumn . $highestRow)->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => Border::BORDER_THIN,
                         ],
                     ],
                 ]);
+
+                $sheet->freezePane('A6');
+                $sheet->getStyle('A5:' . $highestColumn . $highestRow)->getAlignment()->setVertical(Alignment::VERTICAL_TOP);
+
+                if (($alamatColumn = $this->getColumnLetterForField('alamat')) !== null) {
+                    $sheet->getStyle($alamatColumn . '6:' . $alamatColumn . $highestRow)->getAlignment()->setWrapText(true);
+                }
             },
         ];
+    }
+
+    protected function getColumnLetterForField(string $field): ?string
+    {
+        $fieldIndex = array_search($field, $this->selectedFields, true);
+
+        if ($fieldIndex === false) {
+            return null;
+        }
+
+        return $this->columnNumberToLetter($fieldIndex + 2);
+    }
+
+    protected function columnNumberToLetter(int $columnNumber): string
+    {
+        $columnLetter = '';
+
+        while ($columnNumber > 0) {
+            $modulo = ($columnNumber - 1) % 26;
+            $columnLetter = chr(65 + $modulo) . $columnLetter;
+            $columnNumber = intdiv($columnNumber - $modulo, 26);
+        }
+
+        return $columnLetter;
     }
 }

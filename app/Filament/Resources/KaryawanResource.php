@@ -11,12 +11,15 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Models\Subdivisi;
 use App\Models\Divisi;
 use Filament\Forms\Get;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\KaryawanExport;
 
 
 class KaryawanResource extends Resource
@@ -264,6 +267,22 @@ class KaryawanResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('export_selected_excel')
+                        ->label('Export Excel (Terpilih)')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('info')
+                        ->action(function (Collection $records) {
+                            $ids = $records->pluck('id');
+
+                            return Excel::download(
+                                new KaryawanExport(
+                                    query: Karyawan::query()->whereIn('id', $ids),
+                                    title: 'DATA KARYAWAN TERPILIH',
+                                    subtitle: 'Jumlah data: ' . $records->count() . ' | Tanggal Export: ' . now()->format('d/m/Y H:i')
+                                ),
+                                'Data_Karyawan_Terpilih_' . now()->format('Y-m-d_His') . '.xlsx'
+                            );
+                        }),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
