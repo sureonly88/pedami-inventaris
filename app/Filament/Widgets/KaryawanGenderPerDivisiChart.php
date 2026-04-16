@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\Karyawan;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
@@ -15,13 +16,25 @@ class KaryawanGenderPerDivisiChart extends ChartWidget
 
     protected function getData(): array
     {
+        $excludedDivisions = array_map('strtolower', Karyawan::EXCLUDED_REKAP_ACTIVE_DIVISIONS);
+        $activeDivisionFilterSql = "karyawans.status_karyawan = 'Aktif' AND LOWER(COALESCE(divisis.nama_divisi, '')) NOT IN (?, ?, ?, ?)";
+
         $rows = DB::table('karyawans')
             ->leftJoin('subdivisis', 'karyawans.subdivisi_id', '=', 'subdivisis.id')
             ->leftJoin('divisis', 'subdivisis.divisi_id', '=', 'divisis.id')
             ->selectRaw("COALESCE(divisis.nama_divisi, 'Tanpa Divisi') as divisi")
-            ->selectRaw("SUM(CASE WHEN karyawans.jkel = 'Laki-Laki' THEN 1 ELSE 0 END) as laki_laki")
-            ->selectRaw("SUM(CASE WHEN karyawans.jkel = 'Perempuan' THEN 1 ELSE 0 END) as perempuan")
-            ->selectRaw("SUM(CASE WHEN karyawans.jkel = 'L/P' THEN 1 ELSE 0 END) as campuran")
+            ->selectRaw(
+                "SUM(CASE WHEN karyawans.jkel = 'Laki-Laki' AND {$activeDivisionFilterSql} THEN 1 ELSE 0 END) as laki_laki",
+                $excludedDivisions,
+            )
+            ->selectRaw(
+                "SUM(CASE WHEN karyawans.jkel = 'Perempuan' AND {$activeDivisionFilterSql} THEN 1 ELSE 0 END) as perempuan",
+                $excludedDivisions,
+            )
+            ->selectRaw(
+                "SUM(CASE WHEN karyawans.jkel = 'L/P' AND {$activeDivisionFilterSql} THEN 1 ELSE 0 END) as campuran",
+                $excludedDivisions,
+            )
             ->groupBy('divisi')
             ->orderBy('divisi')
             ->get();
