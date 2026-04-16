@@ -45,7 +45,7 @@ class KaryawanImporter extends Importer
                 ->rules(['nullable', 'max:255']),
             ImportColumn::make('status_karyawan')
                 ->requiredMapping()
-                ->rules(['required', 'in:Aktif,Pensiun,Nonaktif']),
+                ->rules(['required', 'in:Aktif,Pengurus,Pensiun,Nonaktif']),
             ImportColumn::make('jabatan')
                 ->requiredMapping()
                 ->rules(['required', 'max:255']),

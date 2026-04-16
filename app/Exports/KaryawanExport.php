@@ -22,6 +22,14 @@ class KaryawanExport implements FromCollection, WithHeadings, WithMapping, Shoul
 
     protected array $selectedFields;
 
+    protected function getFormattedExportTimestamp(): string
+    {
+        return now()
+            ->timezone(config('app.timezone'))
+            ->locale('id')
+            ->translatedFormat('d F Y H:i');
+    }
+
     public function __construct(
         protected ?Builder $query = null,
         protected ?string $title = null,
@@ -148,7 +156,7 @@ class KaryawanExport implements FromCollection, WithHeadings, WithMapping, Shoul
                 $sheet->insertNewRowBefore(1, 4);
                 $sheet->setCellValue('A1', $this->title ?: 'DATA KARYAWAN');
                 $sheet->setCellValue('A2', 'KOPERASI KONSUMEN PEDAMI');
-                $sheet->setCellValue('A3', $this->subtitle ?: 'Tanggal Export: ' . now()->format('d/m/Y H:i'));
+                $sheet->setCellValue('A3', $this->subtitle ?: 'Tanggal Export: ' . $this->getFormattedExportTimestamp());
 
                 $sheet->mergeCells('A1:' . $highestColumn . '1');
                 $sheet->mergeCells('A2:' . $highestColumn . '2');

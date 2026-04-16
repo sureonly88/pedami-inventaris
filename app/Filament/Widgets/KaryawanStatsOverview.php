@@ -15,8 +15,12 @@ class KaryawanStatsOverview extends StatsOverviewWidget
         $total = Karyawan::count();
         $aktif = Karyawan::aktifUntukRekap()->count();
         $pensiun = Karyawan::where('status_karyawan', 'Pensiun')->count();
-        $lakiLaki = Karyawan::where('jkel', 'Laki-Laki')->count();
-        $perempuan = Karyawan::where('jkel', 'Perempuan')->count();
+        $lakiLaki = Karyawan::aktifUntukRekap()
+            ->where('jkel', 'Laki-Laki')
+            ->count();
+        $perempuan = Karyawan::aktifUntukRekap()
+            ->where('jkel', 'Perempuan')
+            ->count();
 
         return [
             Stat::make('Total Karyawan', $total)
@@ -29,10 +33,10 @@ class KaryawanStatsOverview extends StatsOverviewWidget
                 ->description('Status pensiun')
                 ->color('danger'),
             Stat::make('Laki-Laki', $lakiLaki)
-                ->description('Jumlah karyawan laki-laki')
+                ->description('Jumlah karyawan laki-laki aktif')
                 ->color('info'),
             Stat::make('Perempuan', $perempuan)
-                ->description('Jumlah karyawan perempuan')
+                ->description('Jumlah karyawan perempuan aktif')
                 ->color('warning'),
         ];
     }

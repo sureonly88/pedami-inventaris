@@ -42,6 +42,7 @@ class ListKaryawans extends ListRecords
                             ->options([
                                 'all' => 'Semua Status',
                                 'Aktif' => 'Aktif',
+                                'Pengurus' => 'Pengurus',
                                 'Pensiun' => 'Pensiun',
                                 'Nonaktif' => 'Nonaktif',
                             ])
@@ -113,7 +114,7 @@ class ListKaryawans extends ListRecords
                         new KaryawanExport(
                             query: $query,
                             title: 'DATA KARYAWAN',
-                            subtitle: implode(' | ', array_merge($summaryParts, ['Tanggal Export: ' . now()->format('d/m/Y H:i')])),
+                            subtitle: implode(' | ', array_merge($summaryParts, ['Tanggal Export: ' . now()->timezone(config('app.timezone'))->locale('id')->translatedFormat('d F Y H:i')])),
                             selectedFields: $selectedFields,
                         ),
                         'Data_Karyawan_' . ($data['status_karyawan'] === 'all' ? 'Semua' : $data['status_karyawan']) . '_' . now()->format('Y-m-d_His') . '.xlsx'

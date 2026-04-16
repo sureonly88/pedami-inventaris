@@ -165,6 +165,7 @@ class KaryawanResource extends Resource
                     ->label('Status Karyawan')
                     ->options([
                         'Aktif' => 'Aktif',
+                        'Pengurus' => 'Pengurus',
                         'Pensiun' => 'Pensiun',
                         'Nonaktif' => 'Nonaktif',
                     ])
@@ -217,46 +218,44 @@ class KaryawanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nik')->searchable(),
-                Tables\Columns\TextColumn::make('nama_karyawan')->searchable(),
-                Tables\Columns\TextColumn::make('no_ktp')->label('No KTP')->searchable(),
-                Tables\Columns\TextColumn::make('no_hp')->label('No HP')->searchable(),
-                Tables\Columns\TextColumn::make('no_rekening')->label('No Rekening')->searchable(),
-                Tables\Columns\TextColumn::make('no_bpjs_ketenagakerjaan')->label('BPJS Ketenagakerjaan')->searchable(),
-                Tables\Columns\TextColumn::make('no_bpjs_kesehatan')->label('BPJS Kesehatan')->searchable(),
-                Tables\Columns\TextColumn::make('pendidikan_terakhir')->label('Pendidikan Terakhir')->searchable(),
-                Tables\Columns\TextColumn::make('nama_bank')->label('Nama Bank')->searchable(),
-                Tables\Columns\TextColumn::make('tempat_lahir')->label('Tempat Lahir')->searchable(),
-                Tables\Columns\TextColumn::make('agama')->label('Agama')->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_lahir')
-                    ->label('Tgl Lahir')
-                    ->formatStateUsing(fn ($state) => filled($state) ? Carbon::parse($state)->locale('id')->translatedFormat('d F Y') : null),
-                Tables\Columns\TextColumn::make('umur')->label('Umur'),
-                Tables\Columns\TextColumn::make('tanggal_masuk_kerja')
-                    ->label('Tgl Masuk')
-                    ->formatStateUsing(fn ($state) => filled($state) ? Carbon::parse($state)->locale('id')->translatedFormat('d F Y') : null),
-                Tables\Columns\TextColumn::make('masa_kerja')->label('Masa Kerja'),
-                Tables\Columns\TextColumn::make('kontak_darurat')->label('Kontak Darurat')->searchable(),
+                Tables\Columns\TextColumn::make('nik')
+                    ->label('NIK')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('nama_karyawan')
+                    ->label('Nama Karyawan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('jabatan')
+                    ->label('Jabatan')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('subdivisi.divisi.nama_divisi')
+                    ->label('Divisi')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('subdivisi.nama_sub')
+                    ->label('Subdivisi')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('status_karyawan')
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Aktif' => 'success',
+                        'Pengurus' => 'warning',
                         'Pensiun' => 'danger',
                         'Nonaktif' => 'gray',
                         default => 'primary',
                     })
                     ->searchable(),
-                Tables\Columns\TextColumn::make('jabatan'),
-                Tables\Columns\TextColumn::make('subdivisi.divisi.nama_divisi'),
-                Tables\Columns\TextColumn::make('subdivisi.nama_sub'),
-                Tables\Columns\TextColumn::make('jkel'),
+                Tables\Columns\TextColumn::make('masa_kerja')
+                    ->label('Masa Kerja'),
+                Tables\Columns\TextColumn::make('jkel')
+                    ->label('Jenis Kelamin')
+                    ->searchable(),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status_karyawan')
                     ->label('Status')
                     ->options([
                         'Aktif' => 'Aktif',
+                        'Pengurus' => 'Pengurus',
                         'Pensiun' => 'Pensiun',
                         'Nonaktif' => 'Nonaktif',
                     ]),
@@ -278,7 +277,7 @@ class KaryawanResource extends Resource
                                 new KaryawanExport(
                                     query: Karyawan::query()->whereIn('id', $ids),
                                     title: 'DATA KARYAWAN TERPILIH',
-                                    subtitle: 'Jumlah data: ' . $records->count() . ' | Tanggal Export: ' . now()->format('d/m/Y H:i')
+                                    subtitle: 'Jumlah data: ' . $records->count() . ' | Tanggal Export: ' . now()->timezone(config('app.timezone'))->locale('id')->translatedFormat('d F Y H:i')
                                 ),
                                 'Data_Karyawan_Terpilih_' . now()->format('Y-m-d_His') . '.xlsx'
                             );
