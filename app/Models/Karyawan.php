@@ -8,12 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MutasiKaryawan;
 use App\Models\PensiunKaryawan;
 use App\Models\Subdivisi;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Karyawan extends Model
 {
     use HasFactory;
+
+    public const EXCLUDED_REKAP_ACTIVE_DIVISIONS = [
+        'ketua koperasi konsumen pedami',
+        'bendahara koperasi konsumen pedami',
+        'sekretaris koperasi konsumen pedami',
+        'all divisi',
+    ];
 
     protected $appends = [
         'umur',
@@ -46,6 +55,22 @@ class Karyawan extends Model
         'subdivisi_id',
         'jkel',
     ];
+
+    public function scopeAktifUntukRekap(Builder $query): Builder
+    {
+        return $query
+            ->where('status_karyawan', 'Aktif')
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereDoesntHave('subdivisi.divisi', function (Builder $divisiQuery): void {
+                        $divisiQuery->whereIn(
+                            DB::raw('LOWER(nama_divisi)'),
+                            self::EXCLUDED_REKAP_ACTIVE_DIVISIONS,
+                        );
+                    })
+                    ->orWhereDoesntHave('subdivisi');
+            });
+    }
 
     public function getUmurAttribute(): ?string
     {

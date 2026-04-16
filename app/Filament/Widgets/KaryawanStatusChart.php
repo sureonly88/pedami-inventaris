@@ -15,7 +15,7 @@ class KaryawanStatusChart extends ChartWidget
 
     protected function getData(): array
     {
-        $aktif = Karyawan::where('status_karyawan', 'Aktif')->count();
+        $aktif = Karyawan::aktifUntukRekap()->count();
         $pensiun = Karyawan::where('status_karyawan', 'Pensiun')->count();
         $nonaktif = Karyawan::where('status_karyawan', 'Nonaktif')->count();
 

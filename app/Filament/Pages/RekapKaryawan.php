@@ -51,6 +51,8 @@ class RekapKaryawan extends Page
 
     protected function getRekapPerDivisi(): array
     {
+        $excludedDivisions = array_map('strtolower', Karyawan::EXCLUDED_REKAP_ACTIVE_DIVISIONS);
+
         return DB::table('karyawans')
             ->leftJoin('subdivisis', 'karyawans.subdivisi_id', '=', 'subdivisis.id')
             ->leftJoin('divisis', 'subdivisis.divisi_id', '=', 'divisis.id')
@@ -58,7 +60,10 @@ class RekapKaryawan extends Page
             ->selectRaw("SUM(CASE WHEN karyawans.jkel = 'Laki-Laki' THEN 1 ELSE 0 END) as laki_laki")
             ->selectRaw("SUM(CASE WHEN karyawans.jkel = 'Perempuan' THEN 1 ELSE 0 END) as perempuan")
             ->selectRaw("SUM(CASE WHEN karyawans.jkel = 'L/P' THEN 1 ELSE 0 END) as campuran")
-            ->selectRaw("SUM(CASE WHEN karyawans.status_karyawan = 'Aktif' THEN 1 ELSE 0 END) as aktif")
+            ->selectRaw(
+                "SUM(CASE WHEN karyawans.status_karyawan = 'Aktif' AND LOWER(COALESCE(divisis.nama_divisi, '')) NOT IN (?, ?, ?, ?) THEN 1 ELSE 0 END) as aktif",
+                $excludedDivisions,
+            )
             ->selectRaw("SUM(CASE WHEN karyawans.status_karyawan = 'Pensiun' THEN 1 ELSE 0 END) as pensiun")
             ->selectRaw("SUM(CASE WHEN karyawans.status_karyawan = 'Nonaktif' THEN 1 ELSE 0 END) as nonaktif")
             ->selectRaw('COUNT(karyawans.id) as total')

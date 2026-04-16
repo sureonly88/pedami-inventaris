@@ -13,7 +13,7 @@ class KaryawanStatsOverview extends StatsOverviewWidget
     protected function getStats(): array
     {
         $total = Karyawan::count();
-        $aktif = Karyawan::where('status_karyawan', 'Aktif')->count();
+        $aktif = Karyawan::aktifUntukRekap()->count();
         $pensiun = Karyawan::where('status_karyawan', 'Pensiun')->count();
         $lakiLaki = Karyawan::where('jkel', 'Laki-Laki')->count();
         $perempuan = Karyawan::where('jkel', 'Perempuan')->count();
