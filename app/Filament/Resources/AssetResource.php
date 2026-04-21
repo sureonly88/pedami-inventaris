@@ -231,6 +231,7 @@ class AssetResource extends Resource
     {
         return [
             RelationManagers\MutasiAssetsRelationManager::class,
+            RelationManagers\RiwayatServiceAcsRelationManager::class,
         ];
     }
 
