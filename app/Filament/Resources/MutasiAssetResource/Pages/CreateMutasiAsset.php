@@ -18,14 +18,22 @@ class CreateMutasiAsset extends CreateRecord
     {
 
         $asset = Asset::findOrFail($data['asset_id']);
+        $gambarTerbaru = $data['gambar_terbaru'] ?? null;
+
+        if (is_array($gambarTerbaru)) {
+            $gambarTerbaru = count($gambarTerbaru) ? reset($gambarTerbaru) : null;
+        }
 
         $data['ruangan_id_a'] = $asset->ruangan_id;
         $data['penanggung_jawab_id_a'] = $asset->penanggung_jawab_id;
         $data['karyawan_id_a'] = $asset->karyawan_id;
+        $data['gambar_awal'] = $asset->gambar;
+        $data['gambar_terbaru'] = $gambarTerbaru;
 
         $asset->ruangan_id = $data['ruangan_id_t'];
         $asset->penanggung_jawab_id = $data['penanggung_jawab_id_t'];
         $asset->karyawan_id = $data['karyawan_id_t'];
+        $asset->gambar = $gambarTerbaru ?? $asset->gambar;
         $asset->save();
 
         return static::getModel()::create($data);

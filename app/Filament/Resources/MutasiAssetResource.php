@@ -19,6 +19,7 @@ use App\Models\Asset;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Get;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Model;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
@@ -42,6 +43,7 @@ class MutasiAssetResource extends Resource
 
                Forms\Components\Select::make('asset_id')
                 ->label('Kode Asset')
+                ->disabled(fn (string $operation): bool => $operation === 'edit')
                 ->searchable()
                 ->getSearchResultsUsing(function (string $search) {
                 return Asset::where('kode_asset', 'like', "%{$search}%")
@@ -60,6 +62,7 @@ class MutasiAssetResource extends Resource
                 $set('ruangan_id_a', $asset->ruangan_id);
                 $set('penanggung_jawab_id_a', $asset->penanggung_jawab_id);
                 $set('karyawan_id_a', $asset->karyawan_id);
+                $set('gambar_awal', $asset->gambar ? [$asset->gambar] : []);
             }
     }),
                 
@@ -87,6 +90,17 @@ class MutasiAssetResource extends Resource
                                 return Karyawan::all()->pluck('nama_karyawan', 'id')->all();
                         })
                         ->disabled(),
+
+                        FileUpload::make('gambar_awal')
+                            ->label('Gambar Awal')
+                            ->disk('minio')
+                            ->visibility('public')
+                            ->image()
+                            ->multiple(false)
+                            ->openable()
+                            ->downloadable()
+                            ->disabled()
+                            ->dehydrated(),
                     ]),
                 
                 Section::make('Sesudah Mutasi')
@@ -121,6 +135,17 @@ class MutasiAssetResource extends Resource
                         ->getOptionLabelUsing(fn ($value) =>
                             Karyawan::find($value)?->nama_karyawan
                         ),
+
+                        FileUpload::make('gambar_terbaru')
+                            ->label('Gambar Terbaru')
+                            ->disk('minio')
+                            ->visibility('public')
+                            ->image()
+                            ->multiple(false)
+                            ->imageEditor()
+                            ->openable()
+                            ->downloadable()
+                            ->required(),
                 ]),
 
                 Forms\Components\DatePicker::make('tgl_mutasi')
@@ -152,6 +177,12 @@ class MutasiAssetResource extends Resource
                     ->label("Nama Aset")
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\ImageColumn::make('gambar_awal')
+                    ->label('Gambar Awal')
+                    ->disk('minio'),
+                Tables\Columns\ImageColumn::make('gambar_terbaru')
+                    ->label('Gambar Terbaru')
+                    ->disk('minio'),
                 Tables\Columns\TextColumn::make('ruangan_a.ruangan')
                     ->label("Ruangan Awal")
                     ->numeric()
@@ -204,6 +235,7 @@ class MutasiAssetResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -224,7 +256,7 @@ class MutasiAssetResource extends Resource
         return [
             'index' => Pages\ListMutasiAssets::route('/'),
             'create' => Pages\CreateMutasiAsset::route('/create'),
-            //'edit' => Pages\EditMutasiAsset::route('/{record}/edit'),
+            'edit' => Pages\EditMutasiAsset::route('/{record}/edit'),
         ];
     }
 

@@ -230,7 +230,7 @@ class AssetResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\RiwayatServiceAcsRelationManager::class,
+            RelationManagers\MutasiAssetsRelationManager::class,
         ];
     }
 

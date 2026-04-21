@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Karyawan;
+use App\Models\MutasiAsset;
 use App\Models\Ruangan;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Divisi;
@@ -35,5 +36,10 @@ class Asset extends Model
     public function riwayatServiceAcs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(RiwayatServiceAc::class);
+    }
+
+    public function mutasiAssets(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(MutasiAsset::class);
     }
 }
