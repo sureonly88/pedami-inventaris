@@ -44,11 +44,6 @@ class RekapKaryawan extends Page
         return 2;
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return (string) Karyawan::count();
-    }
-
     protected function getRekapPerDivisi(): array
     {
         $excludedDivisions = array_map('strtolower', Karyawan::EXCLUDED_REKAP_ACTIVE_DIVISIONS);
