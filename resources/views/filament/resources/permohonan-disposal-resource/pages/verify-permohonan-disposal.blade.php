@@ -10,28 +10,37 @@
             <x-filament::grid :columns="2" class="gap-4">
                 <div>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Kode Asset
+                        Kode Aset
                     </div>
                     <div class="font-semibold">
-                        {{ $record->asset->kode_asset }}
+                        {{ $record->asset->kode_asset ?? '-' }}
                     </div>
                 </div>
 
                 <div>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Asset
+                        Nama Aset
                     </div>
                     <div class="font-semibold">
-                        {{ $record->asset->nama_asset }}
+                        {{ $record->asset->nama_asset ?? '-' }}
                     </div>
                 </div>
 
                 <div>
                     <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Kode Asset
+                        Harga Beli
                     </div>
                     <div class="font-semibold">
-                        {{ $record->asset->kelompok_asset }}
+                        {{ isset($record->asset->hrg_beli) ? 'Rp ' . number_format((float) $record->asset->hrg_beli, 0, ',', '.') : '-' }}
+                    </div>
+                </div>
+
+                <div>
+                    <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Lokasi Aset
+                    </div>
+                    <div class="font-semibold">
+                        {{ $record->asset?->ruangan ? $record->asset->ruangan->ruangan . ' - ' . ($record->asset->ruangan->lokasi ?? '-') : '-' }}
                     </div>
                 </div>
 
@@ -64,7 +73,7 @@
 
 
                 {{-- MODAL GAMBAR ASSET --}}
-                @if ($record->gambar)
+                @if ($record->asset?->gambar)
                     <div x-data="{ open: false }">
 
                         {{-- Trigger (boleh diganti tombol lain / icon) --}}
@@ -73,7 +82,7 @@
                             color="primary"
                             @click="open = true"
                         >
-                            Lihat Gambar Disposal
+                            Lihat Gambar Aset
                         </x-filament::button>
 
                         {{-- Modal --}}
@@ -89,7 +98,7 @@
                                 {{-- Image --}}
                                 <div class="flex justify-center">
                                     <img
-                                        src="{{ asset('storage/' . $record->gambar) }}"
+                                        src="{{ \Illuminate\Support\Facades\Storage::disk('minio')->url($record->asset->gambar) }}"
                                         alt="Gambar Asset"
                                         class="max-h-[75vh] object-contain rounded-lg"
                                     >

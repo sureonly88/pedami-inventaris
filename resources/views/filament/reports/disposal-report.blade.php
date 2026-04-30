@@ -15,6 +15,8 @@
         .text-center { text-align: center; }
         .footer { position: fixed; bottom: -20px; width: 100%; text-align: right; font-size: 7pt; color: #777; }
         .badge { padding: 2px 5px; border-radius: 3px; font-size: 7pt; color: white; }
+        .asset-image { width: 58px; height: 58px; object-fit: cover; display: block; margin: 0 auto; }
+        .asset-image-placeholder { font-size: 7pt; color: #666; text-align: center; }
     </style>
 </head>
 <body>
@@ -32,6 +34,9 @@
                 <th>Tgl</th>
                 <th>Kode</th>
                 <th>Nama Aset</th>
+                <th>Harga Beli</th>
+                <th>Lokasi Aset</th>
+                <th>Gambar Aset</th>
                 <th>Kondisi</th>
                 <th>Manager</th>
                 <th>Ketua</th>
@@ -40,12 +45,37 @@
         </thead>
         <tbody>
             @foreach($records as $index => $row)
+            @php
+                $gambarAset = null;
+
+                if (!empty($row->asset?->gambar)) {
+                    try {
+                        $disk = \Illuminate\Support\Facades\Storage::disk('minio');
+
+                        if ($disk->exists($row->asset->gambar)) {
+                            $mimeType = $disk->mimeType($row->asset->gambar) ?: 'image/jpeg';
+                            $gambarAset = 'data:' . $mimeType . ';base64,' . base64_encode($disk->get($row->asset->gambar));
+                        }
+                    } catch (\Throwable $e) {
+                        $gambarAset = null;
+                    }
+                }
+            @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td>{{ $row->nomor }}</td>
                 <td class="text-center">{{ $row->tgl_pengajuan ? date('d/m/Y', strtotime($row->tgl_pengajuan)) : '-' }}</td>
                 <td class="text-center">{{ $row->asset?->kode_asset }}</td>
                 <td>{{ $row->asset?->nama_asset }}</td>
+                <td>Rp {{ number_format((float) ($row->asset?->hrg_beli ?? 0), 0, ',', '.') }}</td>
+                <td>{{ $row->asset?->ruangan?->ruangan ? $row->asset->ruangan->ruangan . ' - ' . ($row->asset->ruangan->lokasi ?? '-') : '-' }}</td>
+                <td class="text-center">
+                    @if($gambarAset)
+                        <img src="{{ $gambarAset }}" alt="Gambar Aset" class="asset-image">
+                    @else
+                        <div class="asset-image-placeholder">Tidak ada gambar</div>
+                    @endif
+                </td>
                 <td>{{ $row->kondisi }}</td>
                 <td class="text-center">{{ $row->verif_manager ? 'V' : '-' }}</td>
                 <td class="text-center">{{ $row->verif_ketua ? 'V' : '-' }}</td>

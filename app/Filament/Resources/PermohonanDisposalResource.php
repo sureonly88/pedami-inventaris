@@ -80,11 +80,13 @@ class PermohonanDisposalResource extends Resource
                             return;
                         }
 
-                        $asset = Asset::find($state);
+                        $asset = Asset::with('ruangan')->find($state);
 
                         if ($asset) {
+                            $set('kode_asset', $asset->kode_asset);
                             $set('nama_asset', $asset->nama_asset);
                             $set('hrg_beli', $asset->hrg_beli);
+                            $set('lokasi_asset', $asset->ruangan ? ($asset->ruangan->ruangan . ' - ' . ($asset->ruangan->lokasi ?? '-')) : '-');
 
                             $set('gambar_asset',
                                 $asset->gambar ? [$asset->gambar] : []
@@ -92,11 +94,13 @@ class PermohonanDisposalResource extends Resource
                         }
                     })
                     ->afterStateUpdated(function ($state, callable $set) {
-                        $asset = Asset::find($state);
+                        $asset = Asset::with('ruangan')->find($state);
 
                         if ($asset) {
+                            $set('kode_asset', $asset->kode_asset);
                             $set('nama_asset', $asset->nama_asset);
                             $set('hrg_beli', $asset->hrg_beli);
+                            $set('lokasi_asset', $asset->ruangan ? ($asset->ruangan->ruangan . ' - ' . ($asset->ruangan->lokasi ?? '-')) : '-');
 
                             //dd($asset->gambar);
                             if(!is_null($asset->gambar)){
@@ -104,11 +108,21 @@ class PermohonanDisposalResource extends Resource
                             }else{
                                 $set('gambar_asset', []);
                             }
-                            
+                        } else {
+                            $set('kode_asset', null);
+                            $set('nama_asset', null);
+                            $set('hrg_beli', null);
+                            $set('lokasi_asset', null);
+                            $set('gambar_asset', []);
                         }
                     }),
                 Section::make('Informasi Aset')
                     ->schema([
+                        TextInput::make('kode_asset')
+                            ->label('Kode Aset')
+                            ->disabled()
+                            ->dehydrated(false),
+
                         TextInput::make('nama_asset')
                             ->label('Nama Aset')
                             ->disabled()
@@ -120,6 +134,11 @@ class PermohonanDisposalResource extends Resource
                             ->formatStateUsing(fn ($state) =>
                                 $state ? 'Rp ' . number_format($state, 0, ',', '.') : null
                             )
+                            ->dehydrated(false),
+
+                        TextInput::make('lokasi_asset')
+                            ->label('Lokasi Aset')
+                            ->disabled()
                             ->dehydrated(false),
 
                         FileUpload::make('gambar_asset')

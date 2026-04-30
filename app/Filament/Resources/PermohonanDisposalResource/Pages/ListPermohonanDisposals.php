@@ -104,7 +104,7 @@ class ListPermohonanDisposals extends ListRecords
                             'Laporan_Disposal_' . str_replace(' ', '_', $period) . '.xlsx'
                         );
                     } else {
-                        $records = PermohonanDisposal::with(['asset', 'dibuatOleh'])
+                        $records = PermohonanDisposal::with(['asset.ruangan', 'dibuatOleh'])
                             ->when($filters['from'] ?? null, fn ($q, $from) => $q->whereDate('tgl_pengajuan', '>=', $from))
                             ->when($filters['until'] ?? null, fn ($q, $until) => $q->whereDate('tgl_pengajuan', '<=', $until))
                             ->when($filters['month'] ?? null, fn ($q, $month) => $q->whereMonth('tgl_pengajuan', $month))
