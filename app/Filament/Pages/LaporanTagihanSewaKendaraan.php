@@ -137,7 +137,7 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
         $vehicles = data_r2r4::query()
             ->where(function ($query) {
                 $query
-                    ->where('stat', 'Sewa - Kontrak Berjalan')
+                    ->whereIn('stat', ['Sewa - Kontrak Berjalan', 'Sewa dihentikan'])
                     ->orWhereHas('penjualanR2r4');
             })
             ->with(['kontrak_detail.kontrak', 'penjualanR2r4'])
@@ -151,9 +151,9 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
                 ? Carbon::parse($vehicle->penjualanR2r4->tgl_jual)->startOfDay()
                 : null;
 
-            if ($saleDate && $saleDate->lte($startDate)) {
-                continue;
-            }
+            $stopBillingDate = $vehicle->tgl_stop_tagihan
+                ? Carbon::parse($vehicle->tgl_stop_tagihan)->startOfDay()
+                : null;
 
             $activeDetail = $vehicle->kontrak_detail
                 ->filter(fn ($detail) => $detail->kontrak)
@@ -169,12 +169,23 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
             }
 
             $kontrak = $activeDetail->kontrak;
+            $contractEndDate = Carbon::parse($kontrak->tgl_akhir)->startOfDay();
 
-            $type = str_contains(strtoupper((string) $vehicle->jns_brg), 'R4') ? 'R4' : 'R2';
+            $stopReasons = [
+                $contractEndDate->lt($startDate) ? 'kontrak berakhir' : null,
+                $saleDate && $saleDate->lte($startDate) ? 'kendaraan terjual' : null,
+                $stopBillingDate && $stopBillingDate->lte($startDate) ? 'tagihan dihentikan' : null,
+            ];
 
-            if ($vehicle->tgl_stop_tagihan && Carbon::parse($vehicle->tgl_stop_tagihan)->startOfDay()->lte($startDate)) {
+            if (collect($stopReasons)->filter()->isNotEmpty()) {
+                $effectiveEndDate = collect([
+                    $saleDate && $saleDate->lte($startDate) ? $saleDate : null,
+                    $contractEndDate->lt($startDate) ? $contractEndDate : null,
+                    $stopBillingDate && $stopBillingDate->lte($startDate) ? $stopBillingDate : null,
+                ])->filter()->sort()->first();
+
                 $historyRows->push([
-                    'type' => $type,
+                    'type' => str_contains(strtoupper((string) $vehicle->jns_brg), 'R4') ? 'R4' : 'R2',
                     'no_kontrak' => $kontrak->no_kontrak,
                     'plat' => $vehicle->plat,
                     'jenis_type' => $vehicle->nm_brg,
@@ -190,11 +201,13 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
                     'tgl_stop_tagihan' => $vehicle->tgl_stop_tagihan,
                     'alasan_stop_tagihan' => $vehicle->alasan_stop_tagihan,
                     'status' => $vehicle->stat,
-                    'keterangan' => 'Tidak ditagihkan pada periode ' . $periodLabel,
+                    'keterangan' => 'Berhenti ditagihkan per ' . optional($effectiveEndDate)->translatedFormat('d F Y') . ' (' . collect($stopReasons)->filter()->implode(', ') . ')',
                 ]);
 
                 continue;
             }
+
+            $type = str_contains(strtoupper((string) $vehicle->jns_brg), 'R4') ? 'R4' : 'R2';
 
             $rows->push([
                 'type' => $type,
