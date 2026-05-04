@@ -11,6 +11,12 @@
         </div>
 
         @php
+            $selectedStartMonthLabel = strtoupper($this->monthLabels[$this->selectedStartMonth] ?? '');
+            $selectedEndMonthLabel = strtoupper($this->monthLabels[$this->selectedEndMonth] ?? '');
+            $selectedPeriodLabel = $this->selectedStartMonth === $this->selectedEndMonth
+                ? $selectedStartMonthLabel
+                : $selectedStartMonthLabel . ' - ' . $selectedEndMonthLabel;
+
             $buildSparklinePoints = function (array $values, int $width = 140, int $height = 36) {
                 $numbers = array_values($values);
                 $count = count($numbers);
@@ -37,7 +43,7 @@
                 })->implode(' ');
             };
 
-            $buildTrendNotes = function (string $label, string $typeKey, array $months, array $monthLabels) {
+            $buildTrendNotes = function (string $label, string $typeKey, array $months, array $monthLabels) use ($selectedPeriodLabel) {
                 $notes = [];
                 $previousValue = null;
                 $previousMonth = null;
@@ -90,7 +96,7 @@
                 }
 
                 if (empty($notes)) {
-                    $notes[] = $label . ' cenderung stabil sepanjang tahun ' . $this->selectedYear . '.';
+                    $notes[] = $label . ' cenderung stabil pada periode ' . $selectedPeriodLabel . ' ' . $this->selectedYear . '.';
                 }
 
                 return $notes;
@@ -105,7 +111,7 @@
         <div class="rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-900">
             <div class="mb-4">
                 <h3 class="text-lg font-bold">Total Pendapatan Aset Koperasi Konsumen Pedami</h3>
-                <p class="text-sm text-gray-500">Tahun {{ $this->selectedYear }}</p>
+                <p class="text-sm text-gray-500">Periode {{ $selectedPeriodLabel }} {{ $this->selectedYear }}</p>
             </div>
 
             <div class="overflow-x-auto">
@@ -146,7 +152,7 @@
                         @endforeach
                         <tr class="bg-primary-50 font-bold dark:bg-gray-800">
                             <td colspan="2" class="px-3 py-2">TOTAL PENDAPATAN</td>
-                            @foreach (range(1, 12) as $month)
+                            @foreach (array_keys($this->monthLabels) as $month)
                                 <td class="px-3 py-2 text-right">
                                     {{ number_format(collect($this->incomeRows)->sum(fn ($row) => $row['months'][$month] ?? 0), 0, ',', '.') }}
                                 </td>
@@ -154,7 +160,7 @@
                             <td class="px-3 py-2 text-right">{{ number_format($this->incomeGrandTotal, 0, ',', '.') }}</td>
                             <td class="px-3 py-2 text-center">
                                 @php
-                                    $incomeTotalsByMonth = collect(range(1, 12))
+                                    $incomeTotalsByMonth = collect(array_keys($this->monthLabels))
                                         ->mapWithKeys(fn ($month) => [$month => collect($this->incomeRows)->sum(fn ($row) => $row['months'][$month] ?? 0)])
                                         ->all();
                                 @endphp
@@ -178,7 +184,7 @@
         <div class="rounded-xl border bg-white p-4 shadow-sm dark:bg-gray-900">
             <div class="mb-4">
                 <h3 class="text-lg font-bold">Jumlah Unit Aktif Tagihan</h3>
-                <p class="text-sm text-gray-500">Tahun {{ $this->selectedYear }}</p>
+                <p class="text-sm text-gray-500">Periode {{ $selectedPeriodLabel }} {{ $this->selectedYear }}</p>
             </div>
 
             <div class="overflow-x-auto">
@@ -219,7 +225,7 @@
                         @endforeach
                         <tr class="bg-primary-50 font-bold dark:bg-gray-800">
                             <td colspan="2" class="px-3 py-2">TOTAL JUMLAH UNIT</td>
-                            @foreach (range(1, 12) as $month)
+                            @foreach (array_keys($this->monthLabels) as $month)
                                 <td class="px-3 py-2 text-center">
                                     {{ collect($this->unitRows)->sum(fn ($row) => $row['months'][$month] ?? 0) }}
                                 </td>
@@ -227,7 +233,7 @@
                             <td class="px-3 py-2 text-center">{{ $this->unitGrandTotal }}</td>
                             <td class="px-3 py-2 text-center">
                                 @php
-                                    $unitTotalsByMonth = collect(range(1, 12))
+                                    $unitTotalsByMonth = collect(array_keys($this->monthLabels))
                                         ->mapWithKeys(fn ($month) => [$month => collect($this->unitRows)->sum(fn ($row) => $row['months'][$month] ?? 0)])
                                         ->all();
                                 @endphp

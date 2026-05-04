@@ -8,6 +8,7 @@ use App\Models\Kontrak;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\KontrakDetail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Builder;
 
 class data_r2r4 extends Model
@@ -46,9 +47,14 @@ class data_r2r4 extends Model
         return $this->hasMany(RiwayatPembayaranR2r4::class, 'data_r2r4_id');
     }
 
+    public function penjualanR2r4(): HasOne
+    {
+        return $this->hasOne(PenjualanR2r4::class, 'data_r2r4_id')->latestOfMany('tgl_jual');
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->with(['kontrak_detail.kontrak']);
+            ->with(['kontrak_detail.kontrak', 'penjualanR2r4']);
     }
 }

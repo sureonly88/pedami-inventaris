@@ -43,12 +43,19 @@ class LaporanPendapatanAset extends Page implements HasForms
 
     public int $selectedYear;
 
+    public int $selectedStartMonth;
+
+    public int $selectedEndMonth;
+
     public function mount(): void
     {
         $year = (int) now()->format('Y');
+        $month = (int) now()->format('n');
 
         $this->form->fill([
             'year' => (string) $year,
+            'start_month' => (string) $month,
+            'end_month' => (string) $month,
         ]);
 
         $this->loadReport();
@@ -58,7 +65,15 @@ class LaporanPendapatanAset extends Page implements HasForms
     {
         return $form
             ->schema([
-                Grid::make(1)->schema([
+                Grid::make(3)->schema([
+                    Select::make('start_month')
+                        ->label('Dari Bulan')
+                        ->options($this->getMonthOptions())
+                        ->required(),
+                    Select::make('end_month')
+                        ->label('Sampai Bulan')
+                        ->options($this->getMonthOptions())
+                        ->required(),
                     Select::make('year')
                         ->label('Tahun')
                         ->options($this->getYearOptions())
@@ -72,9 +87,24 @@ class LaporanPendapatanAset extends Page implements HasForms
     {
         $state = $this->form->getState();
         $year = (int) ($state['year'] ?? now()->year);
+        $startMonth = (int) ($state['start_month'] ?? now()->month);
+        $endMonth = (int) ($state['end_month'] ?? $startMonth);
+
+        if ($endMonth < $startMonth) {
+            $endMonth = $startMonth;
+
+            $this->form->fill([
+                ...$state,
+                'end_month' => (string) $endMonth,
+            ]);
+        }
 
         $this->selectedYear = $year;
-        $this->monthLabels = collect(range(1, 12))
+        $this->selectedStartMonth = $startMonth;
+        $this->selectedEndMonth = $endMonth;
+        $selectedMonths = range($startMonth, $endMonth);
+
+        $this->monthLabels = collect($selectedMonths)
             ->mapWithKeys(fn (int $month) => [$month => Carbon::createFromDate($year, $month, 1)->translatedFormat('F')])
             ->all();
 
@@ -86,7 +116,7 @@ class LaporanPendapatanAset extends Page implements HasForms
         $vehicleSalesIncome = [];
         $monthlyVehicleDetails = [];
 
-        foreach (range(1, 12) as $month) {
+        foreach ($selectedMonths as $month) {
             $monthlyData = $this->getMonthlyVehicleRentalData($year, $month);
 
             $r2Income[$month] = $monthlyData['r2_nominal'];
@@ -122,8 +152,12 @@ class LaporanPendapatanAset extends Page implements HasForms
         $endDate = $startDate->copy()->endOfMonth();
 
         $vehicles = data_r2r4::query()
-            ->whereIn('stat', ['Sewa - Kontrak Berjalan', 'Sewa dihentikan'])
-            ->with(['kontrak_detail.kontrak'])
+            ->where(function ($query) {
+                $query
+                    ->whereIn('stat', ['Sewa - Kontrak Berjalan', 'Sewa dihentikan'])
+                    ->orWhereHas('penjualanR2r4');
+            })
+            ->with(['kontrak_detail.kontrak', 'penjualanR2r4'])
             ->get();
 
         $result = [
@@ -148,6 +182,14 @@ class LaporanPendapatanAset extends Page implements HasForms
                 });
 
             if (! $activeDetail || ! $activeDetail->kontrak) {
+                continue;
+            }
+
+            $saleDate = $vehicle->penjualanR2r4?->tgl_jual
+                ? Carbon::parse($vehicle->penjualanR2r4->tgl_jual)->startOfDay()
+                : null;
+
+            if ($saleDate && $saleDate->lte($startDate)) {
                 continue;
             }
 
@@ -178,10 +220,10 @@ class LaporanPendapatanAset extends Page implements HasForms
         $trendDetails = [];
         $previousVehicles = [];
 
-        foreach (range(1, 12) as $month) {
+        foreach (array_keys($this->monthLabels) as $month) {
             $currentVehicles = collect($monthlyVehicleDetails[$month][$type] ?? [])->keyBy('id');
 
-            if ($month > 1) {
+            if (! empty($previousVehicles)) {
                 $added = $currentVehicles->keys()->diff(array_keys($previousVehicles))->values();
                 $removed = collect(array_keys($previousVehicles))->diff($currentVehicles->keys())->values();
 
@@ -224,6 +266,15 @@ class LaporanPendapatanAset extends Page implements HasForms
         $years = range((int) date('Y') + 1, 2020);
 
         return array_combine(array_map('strval', $years), array_map('strval', $years));
+    }
+
+    protected function getMonthOptions(): array
+    {
+        return collect(range(1, 12))
+            ->mapWithKeys(fn (int $month) => [
+                (string) $month => Carbon::create()->month($month)->translatedFormat('F'),
+            ])
+            ->all();
     }
 
     public function getIncomeGrandTotalProperty(): float

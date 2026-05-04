@@ -135,14 +135,26 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
         $periodLabel = $startDate->translatedFormat('F Y');
 
         $vehicles = data_r2r4::query()
-            ->whereIn('stat', ['Sewa - Kontrak Berjalan', 'Sewa dihentikan'])
-            ->with(['kontrak_detail.kontrak'])
+            ->where(function ($query) {
+                $query
+                    ->where('stat', 'Sewa - Kontrak Berjalan')
+                    ->orWhereHas('penjualanR2r4');
+            })
+            ->with(['kontrak_detail.kontrak', 'penjualanR2r4'])
             ->get();
 
         $rows = collect();
         $historyRows = collect();
 
         foreach ($vehicles as $vehicle) {
+            $saleDate = $vehicle->penjualanR2r4?->tgl_jual
+                ? Carbon::parse($vehicle->penjualanR2r4->tgl_jual)->startOfDay()
+                : null;
+
+            if ($saleDate && $saleDate->lte($startDate)) {
+                continue;
+            }
+
             $activeDetail = $vehicle->kontrak_detail
                 ->filter(fn ($detail) => $detail->kontrak)
                 ->first(function ($detail) use ($startDate, $endDate) {
@@ -157,6 +169,7 @@ class LaporanTagihanSewaKendaraan extends Page implements HasForms
             }
 
             $kontrak = $activeDetail->kontrak;
+
             $type = str_contains(strtoupper((string) $vehicle->jns_brg), 'R4') ? 'R4' : 'R2';
 
             if ($vehicle->tgl_stop_tagihan && Carbon::parse($vehicle->tgl_stop_tagihan)->startOfDay()->lte($startDate)) {
