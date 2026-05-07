@@ -116,7 +116,6 @@ class LaporanPendapatanAset extends Page implements HasForms
         $r4Income = [];
         $r2Units = [];
         $r4Units = [];
-        $disposalIncome = [];
         $vehicleSalesIncome = [];
         $monthlyVehicleDetails = [];
 
@@ -127,7 +126,6 @@ class LaporanPendapatanAset extends Page implements HasForms
             $r4Income[$month] = $monthlyData['r4_nominal'];
             $r2Units[$month] = $monthlyData['r2_unit'];
             $r4Units[$month] = $monthlyData['r4_unit'];
-            $disposalIncome[$month] = 0;
             $vehicleSalesIncome[$month] = $this->getMonthlyVehicleSales($year, $month);
             $monthlyVehicleDetails[$month] = $monthlyData['vehicles'];
         }
@@ -135,7 +133,6 @@ class LaporanPendapatanAset extends Page implements HasForms
         $this->incomeRows = [
             $this->makeRow('Tagihan sewa kendaraan Roda Dua (R2)', $r2Income),
             $this->makeRow('Tagihan sewa kendaraan Roda Empat (R4)', $r4Income),
-            $this->makeRow('Penjualan Barang Disposal', $disposalIncome),
             $this->makeRow('Penjualan Kendaraan', $vehicleSalesIncome),
         ];
 
