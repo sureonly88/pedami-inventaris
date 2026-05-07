@@ -25,7 +25,7 @@
         @if(isset($kategori))
             <p style="font-weight: bold;">Kategori: {{ $kategori === 'all' ? 'Semua Kategori' : $kategori }}</p>
         @endif
-        <p>Dicetak pada: {{ now()->format('d/m/Y H:i') }}</p>
+        <p>Dicetak pada: {{ now()->timezone('Asia/Makassar')->format('d/m/Y H:i') }}</p>
         <p>Oleh: {{ auth()->user()->name }}</p>
     </div>
 

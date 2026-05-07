@@ -65,7 +65,7 @@
     </table>
 
     <div class="footer">
-        Dicetak pada: {{ date('d-m-Y H:i:s') }}
+        Dicetak pada: {{ \Carbon\Carbon::now('Asia/Makassar')->format('d-m-Y H:i:s') }}
     </div>
 </body>
 </html>

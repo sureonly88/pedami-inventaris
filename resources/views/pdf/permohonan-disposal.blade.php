@@ -157,7 +157,7 @@ function terbilang($angka)
                     Tanggal Verifikasi : <i>{{ \Carbon\Carbon::parse($record->tgl_pengajuan)->translatedFormat('d-m-Y') }}</i>
                 </span><br>
                 <span style="font-size: 10pt;">
-                    Waktu Verifikasi : <i>{{ \Carbon\Carbon::parse($record->tgl_pengajuan)->translatedFormat('H:i') }}</i>
+                    Waktu Verifikasi : <i>{{ \Carbon\Carbon::parse($record->tgl_pengajuan)->timezone('Asia/Makassar')->translatedFormat('H:i') }}</i>
                 </span><br><br>
 
             <b>{{ $record->dibuatOleh->nama_karyawan }}</b>
@@ -172,7 +172,7 @@ function terbilang($angka)
                     Tanggal Verifikasi : <i>{{ \Carbon\Carbon::parse($record->tgl_verif_manager)->translatedFormat('d-m-Y') }}</i>
                 </span><br>
                 <span style="font-size: 10pt;">
-                    Waktu Verifikasi :  <i>{{ \Carbon\Carbon::parse($record->tgl_verif_manager)->translatedFormat('H:i') }}</i>
+                    Waktu Verifikasi :  <i>{{ \Carbon\Carbon::parse($record->tgl_verif_manager)->timezone('Asia/Makassar')->translatedFormat('H:i') }}</i>
                 </span><br><br>
             @else
                 <br><br>
@@ -191,7 +191,7 @@ function terbilang($angka)
                     Tanggal Verifikasi : <i>{{ \Carbon\Carbon::parse($record->tgl_verif_ketua)->translatedFormat('d-m-Y') }}</i>
                 </span><br>
                 <span style="font-size: 10pt;">
-                    Waktu Verifikasi : <i>{{ \Carbon\Carbon::parse($record->tgl_verif_ketua)->translatedFormat('H:i') }}</i>
+                    Waktu Verifikasi : <i>{{ \Carbon\Carbon::parse($record->tgl_verif_ketua)->timezone('Asia/Makassar')->translatedFormat('H:i') }}</i>
                 </span><br><br>
             @else
                 <br><br>

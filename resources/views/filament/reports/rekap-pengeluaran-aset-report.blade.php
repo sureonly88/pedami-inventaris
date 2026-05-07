@@ -23,7 +23,7 @@
         <h2>KOPERASI KONSUMEN PEDAMI</h2>
         <p>Periode: {{ $period }}</p>
         <p>Divisi: {{ $selectedDivisi ?? 'Semua Divisi' }}</p>
-        <p>Dicetak pada: {{ date('d/m/Y H:i:s') }}</p>
+        <p>Dicetak pada: {{ \Carbon\Carbon::now('Asia/Makassar')->format('d/m/Y H:i:s') }}</p>
     </div>
 
     <div class="section-title">Rekap per Divisi</div>
@@ -91,7 +91,7 @@
     </table>
 
     <div class="footer">
-        Dicetak pada: {{ date('d-m-Y H:i:s') }}<br>
+        Dicetak pada: {{ \Carbon\Carbon::now('Asia/Makassar')->format('d-m-Y H:i:s') }}<br>
         Oleh: {{ auth()->user()->name }}
     </div>
 </body>

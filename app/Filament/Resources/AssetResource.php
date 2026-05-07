@@ -25,7 +25,6 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Exports\ExcelExport;
 use Illuminate\Database\Eloquent\Collection;
-use App\Models\Divisi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 

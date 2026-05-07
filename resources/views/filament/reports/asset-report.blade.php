@@ -21,7 +21,7 @@
     <div class="header">
         <h1>LAPORAN INVENTARIS ASET</h1>
         <h2>KOPERASI KONSUMEN PEDAMI</h2>
-        <p>Dicetak pada: {{ date('d/m/Y H:i:s') }}</p>
+        <p>Dicetak pada: {{ \Carbon\Carbon::now('Asia/Makassar')->format('d/m/Y H:i:s') }}</p>
     </div>
 
     <table>
@@ -64,7 +64,7 @@
     </table>
 
     <div class="footer">
-        Dicetak pada: {{ date('d-m-Y H:i:s') }}<br>
+        Dicetak pada: {{ \Carbon\Carbon::now('Asia/Makassar')->format('d-m-Y H:i:s') }}<br>
         Oleh: {{ auth()->user()->name }}
     </div>
 </body>

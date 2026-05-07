@@ -17,7 +17,7 @@
     </tr>
     @endif
     <tr>
-        <th colspan="6" style="text-align: center;">Dicetak pada: {{ now()->format('d/m/Y H:i') }}</th>
+        <th colspan="6" style="text-align: center;">Dicetak pada: {{ now()->timezone('Asia/Makassar')->format('d/m/Y H:i') }}</th>
     </tr>
     <tr>
         <th colspan="6" style="text-align: center;">Oleh: {{ auth()->user()->name }}</th>
