@@ -11,6 +11,7 @@ use App\Models\Subdivisi;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 
 class Karyawan extends Model
@@ -37,6 +38,7 @@ class Karyawan extends Model
     protected $fillable = [
         'nik',
         'nama_karyawan',
+        'foto',
         'no_ktp',
         'no_hp',
         'no_rekening',
@@ -115,5 +117,10 @@ class Karyawan extends Model
     public function pensiunKaryawans(): HasMany
     {
         return $this->hasMany(PensiunKaryawan::class);
+    }
+
+    public function user(): HasOne
+    {
+        return $this->hasOne(User::class);
     }
 }

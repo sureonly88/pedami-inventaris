@@ -20,6 +20,8 @@ use App\Models\Divisi;
 use Filament\Forms\Get;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\KaryawanExport;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Blade;
 
 
 class KaryawanResource extends Resource
@@ -65,6 +67,14 @@ class KaryawanResource extends Resource
                 Forms\Components\TextInput::make('nama_karyawan')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('foto')
+                    ->label('Foto')
+                    ->disk('minio')
+                    ->visibility('public')
+                    ->image()
+                    ->imageEditor()
+                    ->downloadable()
+                    ->openable(),
                 Forms\Components\TextInput::make('no_ktp')
                     ->label('No KTP')
                     ->maxLength(255),
@@ -262,6 +272,22 @@ class KaryawanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('cetak_id')
+                    ->label('Cetak ID')
+                    ->icon('heroicon-o-identification')
+                    ->color('success')
+                    ->action(function (Karyawan $record) {
+                        $record->loadMissing(['subdivisi.divisi', 'user']);
+
+                        $pdf = Pdf::setPaper('a4', 'landscape')
+                            ->loadHtml(Blade::render('filament.reports.karyawan-id-card', [
+                                'record' => $record,
+                            ]));
+
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->stream();
+                        }, 'ID_Karyawan_' . str($record->nik ?: $record->id)->slug('_') . '.pdf');
+                    }),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
