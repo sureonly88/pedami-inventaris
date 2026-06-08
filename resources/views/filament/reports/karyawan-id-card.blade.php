@@ -235,6 +235,8 @@
 </head>
 <body>
 @php
+    use Illuminate\Support\Facades\Storage;
+
     $division = $record->subdivisi?->divisi?->nama_divisi ?? '-';
     $subdivision = $record->subdivisi?->nama_sub ?? '-';
     $employeeId = data_get($record, 'nip') ?: ($record->nik ?? '-');
@@ -245,10 +247,18 @@
     if ($photoPath) {
         if (str_starts_with($photoPath, 'http')) {
             $photoUrl = $photoPath;
-        } elseif (file_exists(public_path($photoPath))) {
-            $photoUrl = public_path($photoPath);
-        } elseif (file_exists(public_path('storage/' . $photoPath))) {
-            $photoUrl = public_path('storage/' . $photoPath);
+        } else {
+            $photoPath = ltrim($photoPath, '/');
+
+            try {
+                $photoUrl = Storage::disk('minio')->url($photoPath);
+            } catch (\Throwable $exception) {
+                if (file_exists(public_path($photoPath))) {
+                    $photoUrl = public_path($photoPath);
+                } elseif (file_exists(public_path('storage/' . $photoPath))) {
+                    $photoUrl = public_path('storage/' . $photoPath);
+                }
+            }
         }
     }
 
