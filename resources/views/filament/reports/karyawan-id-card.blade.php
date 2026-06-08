@@ -54,7 +54,14 @@
             left: 0;
             right: 0;
             height: 31mm;
-            background: #b91c1c;
+        }
+
+        .front .top {
+            background: #166534;
+        }
+
+        .back .top {
+            background: #166534;
         }
 
         .curve {
@@ -112,10 +119,10 @@
             border-radius: 50%;
             background: #f9fafb;
             border: 3px solid #ffffff;
-            outline: 2px solid #b91c1c;
+            outline: 2px solid #166534;
             text-align: center;
             line-height: 21mm;
-            color: #b91c1c;
+            color: #166534;
             font-size: 24px;
             font-weight: bold;
             overflow: hidden;
@@ -236,7 +243,7 @@
         .back-title {
             font-size: 10px;
             font-weight: bold;
-            color: #b91c1c;
+            color: #166534;
             margin-bottom: 2.5mm;
             text-transform: uppercase;
         }
@@ -392,6 +399,11 @@
                                 <td class="label">Status</td>
                                 <td class="separator">:</td>
                                 <td class="value">{{ $record->status_karyawan ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Divisi</td>
+                                <td class="separator">:</td>
+                                <td class="value">{{ $division }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Subdivisi</td>
