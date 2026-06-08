@@ -104,35 +104,40 @@
 
         .photo {
             position: absolute;
-            top: 19mm;
+            top: 17mm;
             left: 50%;
-            width: 25mm;
-            height: 25mm;
-            margin-left: -12.5mm;
+            width: 21mm;
+            height: 21mm;
+            margin-left: -10.5mm;
             border-radius: 50%;
             background: #f9fafb;
             border: 3px solid #ffffff;
             outline: 2px solid #b91c1c;
             text-align: center;
-            line-height: 25mm;
+            line-height: 21mm;
             color: #b91c1c;
-            font-size: 30px;
+            font-size: 24px;
             font-weight: bold;
+            overflow: hidden;
+            z-index: 3;
         }
 
         .photo img {
-            width: 100%;
-            height: 100%;
+            display: block;
+            width: 21mm;
+            height: 21mm;
+            max-width: 21mm;
+            max-height: 21mm;
             border-radius: 50%;
-            object-fit: cover;
         }
 
         .front-content {
             position: absolute;
             left: 6mm;
             right: 6mm;
-            top: 46mm;
+            top: 42mm;
             text-align: center;
+            z-index: 2;
         }
 
         .name {
@@ -147,7 +152,7 @@
             font-size: 8.5px;
             color: #4b5563;
             line-height: 1.25;
-            margin-bottom: 3mm;
+            margin-bottom: 2mm;
         }
 
         .info-table {
@@ -159,7 +164,7 @@
         }
 
         .info-table td {
-            padding: 0.9mm 0.6mm;
+            padding: 0.55mm 0.6mm;
             vertical-align: top;
         }
 
@@ -185,12 +190,37 @@
         .front-footer {
             position: absolute;
             right: 6mm;
-            bottom: 7mm;
+            bottom: 5mm;
             max-width: 33mm;
             text-align: right;
             font-size: 6.5px;
             color: #6b7280;
             line-height: 1.35;
+            z-index: 2;
+        }
+
+        .qr-code {
+            position: absolute;
+            left: 7mm;
+            bottom: 5mm;
+            width: 10mm;
+            height: 10mm;
+            padding: 0.7mm;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 2px;
+            line-height: 0;
+            font-size: 0;
+            overflow: hidden;
+            z-index: 3;
+        }
+
+        .qr-code img {
+            display: block;
+            width: 8.6mm;
+            height: 8.6mm;
+            max-width: 8.6mm;
+            max-height: 8.6mm;
         }
 
         .back-content {
@@ -243,6 +273,7 @@
     $email = $record->user?->email ?? data_get($record, 'email') ?? '-';
     $photoPath = data_get($record, 'foto') ?: data_get($record, 'photo') ?: data_get($record, 'gambar');
     $photoUrl = null;
+    $employeeInfoUrl = route('info-karyawan.public', $record);
 
     if ($photoPath) {
         if (str_starts_with($photoPath, 'http')) {
@@ -293,7 +324,7 @@
 
                     <div class="photo">
                         @if($photoUrl)
-                            <img src="{{ $photoUrl }}" alt="Foto {{ $record->nama_karyawan }}">
+                            <img src="{{ $photoUrl }}" width="79" height="79" style="display: block; width: 21mm; height: 21mm; max-width: 21mm; max-height: 21mm;" alt="Foto {{ $record->nama_karyawan }}">
                         @else
                             {{ strtoupper(mb_substr($record->nama_karyawan ?? 'K', 0, 1)) }}
                         @endif
@@ -330,6 +361,10 @@
                     <div class="front-footer">
                         Kartu identitas resmi<br>
                         Koperasi Konsumen Pedami
+                    </div>
+
+                    <div class="qr-code">
+                        <img src="data:image/png;base64,{{ DNS2D::getBarcodePNG($employeeInfoUrl, 'QRCODE', 3, 3) }}" width="33" height="33" style="display: block; width: 8.6mm; height: 8.6mm; max-width: 8.6mm; max-height: 8.6mm;" alt="QR Data Karyawan">
                     </div>
                 </div>
             </td>
