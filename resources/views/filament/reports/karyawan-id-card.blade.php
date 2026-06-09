@@ -249,7 +249,7 @@
         }
 
         .note-list {
-            margin: 3mm 0 0 0;
+            margin: 1.5mm 0 0 0;
             padding-left: 4mm;
         }
 
@@ -261,12 +261,26 @@
             position: absolute;
             left: 6mm;
             right: 6mm;
-            bottom: 4mm;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 2mm;
+            bottom: 3mm;
+            padding-top: 1mm;
             font-size: 6.5px;
-            color: #6b7280;
+            color: #111827;
             text-align: center;
+            line-height: 1.25;
+        }
+
+        .signature-name {
+            display: block;
+            margin-top: 0.4mm;
+            font-weight: bold;
+        }
+
+        .signature-img {
+            display: block;
+            width: 15mm;
+            max-width: 15mm;
+            max-height: 5mm;
+            margin: 0.4mm auto 0;
         }
     </style>
 </head>
@@ -389,11 +403,6 @@
                                 <td class="value">{{ $joinDate }}</td>
                             </tr>
                             <tr>
-                                <td class="label">Status</td>
-                                <td class="separator">:</td>
-                                <td class="value">{{ $record->status_karyawan ?? '-' }}</td>
-                            </tr>
-                            <tr>
                                 <td class="label">Divisi</td>
                                 <td class="separator">:</td>
                                 <td class="value">{{ $division }}</td>
@@ -412,7 +421,12 @@
                     </div>
 
                     <div class="back-footer">
-                        Dicetak pada {{ \Carbon\Carbon::now('Asia/Makassar')->locale('id')->translatedFormat('d F Y') }}
+                        mengetahui,<br>
+                        Ketua Koperasi Konsumen PEDAMI<br>
+                        @if(file_exists(public_path('img/ttd-ketua2.jpg')))
+                            <img src="{{ public_path('img/ttd-ketua2.jpg') }}" class="signature-img" alt="Tanda tangan Ketua">
+                        @endif
+                        <span class="signature-name">Irwan Firmana, S. Sos</span>
                     </div>
                 </div>
             </td>

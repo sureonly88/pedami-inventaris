@@ -6,6 +6,7 @@ use App\Filament\Widgets\KaryawanGenderPerDivisiChart;
 use App\Filament\Widgets\KaryawanStatsOverview;
 use App\Filament\Widgets\KaryawanStatusChart;
 use App\Models\Karyawan;
+use Carbon\Carbon;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\DB;
 
@@ -25,9 +26,12 @@ class RekapKaryawan extends Page
 
     public array $rekapPerDivisi = [];
 
+    public array $karyawanMendekatiPensiun = [];
+
     public function mount(): void
     {
         $this->rekapPerDivisi = $this->getRekapPerDivisi();
+        $this->karyawanMendekatiPensiun = $this->getKaryawanMendekatiPensiun();
     }
 
     protected function getHeaderWidgets(): array
@@ -83,6 +87,47 @@ class RekapKaryawan extends Page
                 'nonaktif' => (int) $row->nonaktif,
                 'total' => (int) $row->total,
             ])
+            ->all();
+    }
+
+    protected function getKaryawanMendekatiPensiun(): array
+    {
+        $today = now()->timezone(config('app.timezone'))->startOfDay();
+        $warningUntil = $today->copy()->addYear();
+
+        return Karyawan::query()
+            ->with('subdivisi.divisi')
+            ->whereIn('status_karyawan', ['Aktif', 'Pengurus'])
+            ->whereNotNull('tanggal_lahir')
+            ->get()
+            ->map(function (Karyawan $karyawan) use ($today) {
+                $tanggalPensiun = Carbon::parse($karyawan->tanggal_lahir)
+                    ->timezone(config('app.timezone'))
+                    ->addYears(56)
+                    ->startOfDay();
+                $sisaWaktu = $today->diff($tanggalPensiun);
+                $sisaBulan = ($sisaWaktu->y * 12) + $sisaWaktu->m;
+
+                return [
+                    'nik' => $karyawan->nik ?? '-',
+                    'nama_karyawan' => $karyawan->nama_karyawan ?? '-',
+                    'jabatan' => $karyawan->jabatan ?? '-',
+                    'divisi' => $karyawan->subdivisi?->divisi?->nama_divisi ?? 'Tanpa Divisi',
+                    'umur' => $karyawan->umur ?? '-',
+                    'tanggal_pensiun' => $tanggalPensiun->locale('id')->translatedFormat('d F Y'),
+                    'sisa_hari' => $today->diffInDays($tanggalPensiun, false),
+                    'sisa_waktu' => sprintf('%d bulan %d hari', $sisaBulan, $sisaWaktu->d),
+                    'tanggal_pensiun_sort' => $tanggalPensiun->timestamp,
+                ];
+            })
+            ->filter(fn (array $row) => $row['sisa_hari'] >= 0 && $row['sisa_hari'] <= $today->diffInDays($warningUntil))
+            ->sortBy('tanggal_pensiun_sort')
+            ->values()
+            ->map(function (array $row) {
+                unset($row['tanggal_pensiun_sort']);
+
+                return $row;
+            })
             ->all();
     }
 }
