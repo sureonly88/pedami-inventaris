@@ -277,7 +277,6 @@
     $division = $record->subdivisi?->divisi?->nama_divisi ?? '-';
     $subdivision = $record->subdivisi?->nama_sub ?? '-';
     $employeeId = data_get($record, 'nip') ?: ($record->nik ?? '-');
-    $email = $record->user?->email ?? data_get($record, 'email') ?? '-';
     $photoPath = data_get($record, 'foto') ?: data_get($record, 'photo') ?: data_get($record, 'gambar');
     $photoUrl = null;
     $employeeInfoUrl = route('info-karyawan.public', $record);
@@ -303,10 +302,9 @@
     $displayName = mb_strimwidth($record->nama_karyawan ?? '-', 0, 34, '...');
     $displayPosition = mb_strimwidth($record->jabatan ?? '-', 0, 32, '...');
     $displaySubdivision = mb_strimwidth($subdivision, 0, 30, '...');
-    $displayEmail = mb_strimwidth($email, 0, 32, '...');
     $displayPhone = mb_strimwidth($record->no_hp ?? '-', 0, 22, '...');
-    $dob = $record->tanggal_lahir ? $record->tanggal_lahir->timezone(config('app.timezone'))->format('d/m/Y') : '-';
-    $joinDate = $record->tanggal_masuk_kerja ? $record->tanggal_masuk_kerja->timezone(config('app.timezone'))->format('d/m/Y') : '-';
+    $dob = $record->tanggal_lahir ? $record->tanggal_lahir->timezone(config('app.timezone'))->locale('id')->translatedFormat('d F Y') : '-';
+    $joinDate = $record->tanggal_masuk_kerja ? $record->tanggal_masuk_kerja->timezone(config('app.timezone'))->locale('id')->translatedFormat('d F Y') : '-';
 @endphp
 
 <div class="sheet">
@@ -351,11 +349,6 @@
                                 <td class="label">DOB</td>
                                 <td class="separator">:</td>
                                 <td class="value">{{ $dob }}</td>
-                            </tr>
-                            <tr>
-                                <td class="label">Email</td>
-                                <td class="separator">:</td>
-                                <td class="value">{{ $displayEmail }}</td>
                             </tr>
                             <tr>
                                 <td class="label">Phone</td>
@@ -419,7 +412,7 @@
                     </div>
 
                     <div class="back-footer">
-                        Dicetak pada {{ \Carbon\Carbon::now('Asia/Makassar')->format('d/m/Y H:i') }}
+                        Dicetak pada {{ \Carbon\Carbon::now('Asia/Makassar')->locale('id')->translatedFormat('d F Y') }}
                     </div>
                 </div>
             </td>
